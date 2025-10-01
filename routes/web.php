@@ -1,0 +1,227 @@
+<?php
+
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
+use App\Models\TeamMember;
+use App\Models\Page;
+use App\Models\Gallery;
+use Illuminate\Support\Facades\Route;
+
+// Create admin user route (remove after use)
+Route::get('/create-admin-user', [AuthController::class, 'createAdminUser']);
+
+// Authentication Routes
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+
+// Public Routes
+Route::get('/', function () {
+    try {
+        $page = Page::where('slug', 'home')->first();
+    } catch (\Exception $e) {
+        $page = null;
+    }
+    
+    try {
+        $gallery = Gallery::where('is_active', true)
+            ->orderBy('order')
+            ->limit(6)
+            ->get();
+    } catch (\Exception $e) {
+        $gallery = collect([]);
+    }
+    
+    $defaultContent = [
+        'hero' => [
+            'title' => 'Inclusive Green Energy Africa',
+            'subtitle' => 'Empowering Communities Through Sustainable Energy',
+            'description' => 'Providing innovative solar energy solutions to drive economic growth and environmental sustainability across Africa.'
+        ],
+        'why_choose_title' => 'Why Choose Inclusive Green Energy Africa?',
+        'stats' => [
+            'products_sold' => '500+',
+            'products_sold_text' => 'Products Sold',
+            'people_reached' => '10,000+',
+            'people_reached_text' => 'People Reached',
+            'eco_friendly' => '100%',
+            'eco_friendly_text' => 'Eco Friendly'
+        ],
+        'products_title' => 'Our Products & Services',
+        'products' => [
+            [
+                'title' => 'Solar Home Systems',
+                'description' => 'Complete solar solutions for residential use, providing reliable electricity for lighting, charging, and small appliances.',
+                'icon' => 'bi-house-check'
+            ],
+            [
+                'title' => 'Solar Water Pumping',
+                'description' => 'Efficient solar-powered water pumping systems for irrigation and domestic water supply.',
+                'icon' => 'bi-droplet'
+            ],
+            [
+                'title' => 'Energy Consulting',
+                'description' => 'Expert advice and consultation services for sustainable energy projects and implementations.',
+                'icon' => 'bi-lightbulb'
+            ]
+        ],
+        'gallery_title' => 'Our Work in Action',
+        'gallery_description' => 'See how we\'re transforming communities through sustainable energy solutions.'
+    ];
+
+    $content = $page && !empty($page->content) ? json_decode($page->content, true) : $defaultContent;
+
+    return view('pages.home', compact('page', 'content', 'gallery'));
+})->name('home');
+
+Route::get('/about', function () {
+    try {
+        $page = Page::where('slug', 'about')->first();
+    } catch (\Exception $e) {
+        $page = null;
+    }
+    
+    $defaultContent = [
+        'hero' => [
+            'title' => 'About Inclusive Green Energy Africa',
+            'subtitle' => 'Driving Sustainable Energy Solutions Across Africa'
+        ],
+        'sections' => [
+            'who_we_are' => [
+                'title' => 'Who We Are',
+                'content' => 'Inclusive Green Energy Africa is a pioneering organization dedicated to providing sustainable energy solutions that empower communities across Africa. We believe in the transformative power of renewable energy to drive economic growth and improve quality of life.'
+            ],
+            'vision' => [
+                'title' => 'Our Vision',
+                'content' => 'To be the leading provider of inclusive and sustainable energy solutions across Africa, empowering communities and driving environmental conservation.'
+            ],
+            'mission' => [
+                'title' => 'Our Mission',
+                'content' => 'To provide accessible, affordable, and sustainable energy solutions that transform lives, empower communities, and protect our environment through innovative solar technologies.'
+            ],
+            'keys' => [
+                'title' => 'Our Key Focus Areas',
+                'items' => [
+                    'Solar Home Systems for rural electrification',
+                    'Solar water pumping for agriculture and domestic use',
+                    'Energy efficiency consulting',
+                    'Community empowerment through renewable energy'
+                ]
+            ],
+            'overview' => [
+                'title' => 'Company Overview',
+                'content' => 'Founded with a passion for sustainable development, Inclusive Green Energy Africa combines technical expertise with deep community engagement to deliver energy solutions that make a real difference in people\'s lives.'
+            ]
+        ]
+    ];
+
+    $content = $page && !empty($page->content) ? json_decode($page->content, true) : $defaultContent;
+
+    return view('pages.about', compact('page', 'content'));
+})->name('about');
+
+Route::get('/products', function () {
+    try {
+        $page = Page::where('slug', 'products')->first();
+    } catch (\Exception $e) {
+        $page = null;
+    }
+    
+    $defaultContent = [
+        'hero' => [
+            'title' => 'Our Products & Services',
+            'subtitle' => 'Sustainable Energy Solutions for Every Need'
+        ],
+        'sections' => [
+            'solar_home' => [
+                'title' => 'Solar Home Systems',
+                'content' => 'Complete solar solutions designed for residential use, providing reliable electricity for lighting, mobile charging, radio, television, and small appliances. Our systems are perfect for both urban and rural households.',
+                'images' => []
+            ],
+            'solar_water' => [
+                'title' => 'Solar Water Pumping Systems',
+                'content' => 'Efficient solar-powered water pumping solutions for irrigation, livestock watering, and domestic water supply. Reduce your energy costs while ensuring reliable water access.',
+                'images' => []
+            ]
+        ]
+    ];
+
+    $content = $page && !empty($page->content) ? json_decode($page->content, true) : $defaultContent;
+
+    return view('pages.products', compact('page', 'content'));
+})->name('products');
+
+// Public Gallery Route
+Route::get('/gallery', function () {
+    try {
+        $gallery = Gallery::where('is_active', true)
+            ->orderBy('order')
+            ->get();
+    } catch (\Exception $e) {
+        $gallery = collect([]);
+    }
+    return view('pages.gallery', compact('gallery'));
+})->name('gallery');
+
+Route::get('/team', function () {
+    try {
+        $teamMembers = TeamMember::where('is_active', true)
+            ->orderBy('order')
+            ->get();
+    } catch (\Exception $e) {
+        $teamMembers = collect([]);
+    }
+    return view('pages.team', compact('teamMembers'));
+})->name('team');
+
+Route::get('/contact', function () {
+    return view('pages.contact');
+})->name('contact');
+
+// Admin routes - protected by auth middleware
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    
+    // Team Members Routes
+    Route::prefix('team')->group(function () {
+        Route::get('/', [AdminController::class, 'manageTeam'])->name('admin.team.index');
+        Route::get('/create', [AdminController::class, 'createTeamMember'])->name('admin.team.create');
+        Route::post('/store', [AdminController::class, 'storeTeamMember'])->name('admin.team.store');
+        Route::get('/edit/{id}', [AdminController::class, 'editTeamMember'])->name('admin.team.edit');
+        Route::post('/update/{id}', [AdminController::class, 'updateTeamMember'])->name('admin.team.update');
+        Route::delete('/delete/{id}', [AdminController::class, 'deleteTeamMember'])->name('admin.team.delete');
+        Route::patch('/toggle-status/{id}', [AdminController::class, 'toggleTeamMemberStatus'])->name('admin.team.toggle-status');
+        Route::get('/{id}/image', [AdminController::class, 'showTeamMemberImage'])->name('admin.team.image');
+    });
+    
+    // Gallery Routes
+    Route::prefix('gallery')->group(function () {
+        Route::get('/', [AdminController::class, 'manageGallery'])->name('admin.gallery.index');
+        Route::get('/create', [AdminController::class, 'createGalleryImage'])->name('admin.gallery.create');
+        Route::post('/store', [AdminController::class, 'storeGalleryImage'])->name('admin.gallery.store');
+        Route::get('/edit/{id}', [AdminController::class, 'editGalleryImage'])->name('admin.gallery.edit');
+        Route::post('/update/{id}', [AdminController::class, 'updateGalleryImage'])->name('admin.gallery.update');
+        Route::delete('/delete/{id}', [AdminController::class, 'deleteGalleryImage'])->name('admin.gallery.delete');
+        Route::get('/{id}/image', [AdminController::class, 'showGalleryImage'])->name('admin.gallery.image');
+    });
+    
+    // Page Routes
+    Route::prefix('pages')->group(function () {
+        Route::get('/', [AdminController::class, 'listPages'])->name('admin.pages.index');
+        Route::get('/edit/{pageSlug}', [AdminController::class, 'editPage'])->name('admin.pages.edit');
+        Route::post('/update/{pageSlug}', [AdminController::class, 'updatePageContent'])->name('admin.pages.update');
+    });
+});
+
+// Redirect /admin to dashboard
+Route::get('/admin', function () {
+    return redirect()->route('admin.dashboard');
+});
+
+// Fallback route for 404 pages
+Route::fallback(function () {
+    abort(404);
+});
