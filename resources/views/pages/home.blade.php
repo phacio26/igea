@@ -151,54 +151,26 @@
             <div class="modal-body">
                 <div class="container-fluid">
                     <div class="row g-3">
-                        <!-- Static Gallery Images -->
-                        <div class="col-lg-4 col-md-6">
-                            <img src="{{ asset('images/MANGANI/IMG-20250307-WA0460.jpg') }}" alt="Solar panel installation progress" class="img-fluid modal-gallery-image">
-                        </div>
-                        <div class="col-lg-4 col-md-6">
-                            <img src="{{ asset('images/MANGANI/battry.jpg') }}" alt="Solar battery system" class="img-fluid modal-gallery-image">
-                        </div>
-                        <div class="col-lg-4 col-md-6">
-                            <img src="{{ asset('images/MANGANI/solar.jpg') }}" alt="Solar panel array" class="img-fluid modal-gallery-image">
-                        </div>
-                        <div class="col-lg-4 col-md-6">
-                            <img src="{{ asset('images/MANGANI/IMG-20250307-WA0463.jpg') }}" alt="Community energy project" class="img-fluid modal-gallery-image">
-                        </div>
-                        <div class="col-lg-4 col-md-6">
-                            <img src="{{ asset('images/MANGANI/20240630_121604.jpg') }}" alt="Solar installation team" class="img-fluid modal-gallery-image">
-                        </div>
-                        <div class="col-lg-4 col-md-6">
-                            <img src="{{ asset('images/MANGANI/WhatsApp Image 2025-03-08 at 03.47.47_d2441411.jpg') }}" alt="Solar product demonstration" class="img-fluid modal-gallery-image">
-                        </div>
-                        <div class="col-lg-4 col-md-6">
-                            <img src="{{ asset('images/MANGANI/WhatsApp Image 2025-03-08 at 03.47.47_db158e20.jpg') }}" alt="Energy solution showcase" class="img-fluid modal-gallery-image">
-                        </div>
-                        <div class="col-lg-4 col-md-6">
-                            <img src="{{ asset('images/MANGANI/20240630_122724.jpg') }}" alt="Project site visit" class="img-fluid modal-gallery-image">
-                        </div>
-                        <div class="col-lg-4 col-md-6">
-                            <img src="{{ asset('images/MANGANI/photo.jpg') }}" alt="Team photo" class="img-fluid modal-gallery-image">
-                        </div>
-                        
-                        <!-- Dynamic Gallery Images from Database (if available) -->
+                        <!-- Dynamic Gallery Images from Database -->
                         @if(isset($gallery) && $gallery->count() > 0)
                             @foreach($gallery as $item)
                             <div class="col-lg-4 col-md-6">
-                                @if($item->image)
-                                    <img src="{{ asset('storage/' . $item->image) }}" 
-                                         alt="{{ $item->title }}" 
-                                         class="img-fluid modal-gallery-image"
-                                         onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
-                                @else
-                                    <img src="{{ asset('images/placeholder.jpg') }}" 
-                                         alt="{{ $item->title }}" 
-                                         class="img-fluid modal-gallery-image">
-                                @endif
+                                <img src="{{ $item->image_url }}" 
+                                     alt="{{ $item->title }}" 
+                                     class="img-fluid modal-gallery-image"
+                                     onerror="this.src='{{ asset('images/default-image.png') }}'">
                                 @if($item->title)
                                     <p class="text-center mt-2 small">{{ $item->title }}</p>
                                 @endif
                             </div>
                             @endforeach
+                        @else
+                            <!-- Fallback message if no gallery images -->
+                            <div class="col-12 text-center py-5">
+                                <i class="bi bi-images display-1 text-muted"></i>
+                                <h4 class="text-muted mt-3">No Gallery Images Available</h4>
+                                <p class="text-muted">Gallery images will be added soon.</p>
+                            </div>
                         @endif
                     </div>
                 </div>

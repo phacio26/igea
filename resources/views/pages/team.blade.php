@@ -3,35 +3,37 @@
 @section('title', 'Our Team - Inclusive Green Energy Africa')
 
 @section('content')
-@php
-use Illuminate\Support\Facades\Storage;
-@endphp
+<!-- Hero Section -->
+<section class="team-hero-section">
+    <div class="container hero-content">
+        <h1>Meet Our Passionate Team</h1>
+        <p>The dedicated individuals driving sustainable energy solutions and community empowerment across Africa.</p>
+    </div>
+</section>
 
+<!-- Team Section -->
 <section class="py-5">
     <div class="container">
-        <div class="text-center mb-5">
-            <h1 class="display-4 fw-bold text-success">Our Team</h1>
-            <p class="lead">Meet the dedicated professionals driving sustainable energy solutions across Africa</p>
-        </div>
-
         @if($teamMembers->count() > 0)
-            <div class="row">
+            <div class="row justify-content-center">
                 @foreach($teamMembers as $member)
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="card team-card h-100 border-0 shadow-sm">
-                            @if($member->image_path && Storage::disk('public')->exists($member->image_path))
-                                <img src="{{ asset('storage/' . $member->image_path) }}" 
-                                     class="card-img-top" 
-                                     alt="{{ $member->name }}">
-                            @else
-                                <img src="{{ asset('images/placeholder-team.jpg') }}" 
-                                     class="card-img-top" 
-                                     alt="{{ $member->name }}">
-                            @endif
-                            <div class="card-body text-center">
-                                <h5 class="card-title fw-bold">{{ $member->name }}</h5>
-                                <h6 class="card-subtitle mb-3 text-success">{{ $member->position }}</h6>
-                                <p class="card-text">{{ $member->description }}</p>
+                    <div class="col-xl-3 col-lg-4 col-md-6 mb-5">
+                        <div class="team-card text-center h-100">
+                            <!-- Responsive Image Section -->
+                            <div class="team-image-container">
+                                <img src="{{ $member->image_url }}" 
+                                     alt="{{ $member->name }}" 
+                                     class="team-img img-fluid"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/default-avatar.png') }}';">
+                            </div>
+                            
+                            <div class="team-content">
+                                <h4 class="team-name h5 mb-2">{{ $member->name }}</h4>
+                                <h5 class="team-position text-primary mb-3">{{ $member->position }}</h5>
+                                
+                                @if($member->description)
+                                    <p class="team-description text-muted mb-0">{{ $member->description }}</p>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -39,11 +41,379 @@ use Illuminate\Support\Facades\Storage;
             </div>
         @else
             <div class="text-center py-5">
-                <i class="bi bi-people display-1 text-muted"></i>
-                <h3 class="text-muted mt-3">Team Information Coming Soon</h3>
-                <p class="text-muted">We're currently updating our team information.</p>
+                <div class="empty-state">
+                    <i class="bi bi-people display-1 text-muted mb-4"></i>
+                    <h3 class="text-muted mb-3">No Team Members Available</h3>
+                    <p class="text-muted mb-4">Our team information is currently being updated. Please check back soon.</p>
+                </div>
             </div>
         @endif
     </div>
 </section>
+
+<!-- Contact Us Section -->
+<section class="contact-section py-5">
+    <div class="container">
+        <h2 class="text-center section-heading">Contact Us</h2>
+        <div class="contact-info-details col-lg-8 mx-auto">
+            <p class="text-center">Get in touch with our team:</p>
+            <div class="text-center">
+                <p><i class="bi bi-telephone"></i> <strong>Phone:</strong> <a href="tel:+265988415852">+265 (0) 988 415 852</a></p>
+                <p><i class="bi bi-envelope"></i> <strong>Email:</strong> <a href="mailto:inclusivegreenenergyafrica@gmail.com">inclusivegreenenergyafrica@gmail.com</a></p>
+                <p><i class="bi bi-geo-alt"></i> <strong>Address:</strong> Lilongwe, Malawi</p>
+            </div>
+            <h3 class="mt-4 h5 fw-semibold text-center">Office Hours</h3>
+            <p class="text-center">Monday to Friday: 8:00 am - 5:00 pm</p>
+            <p class="text-center">Saturday: 9:00 am - 12:00 noon</p>
+            <p class="text-center">Closed on Sundays</p>
+            <!-- Follow Us Online Section -->
+            <div class="social-icons text-center">
+                <h4 class="h5 fw-semibold mb-3">Follow us online</h4>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="https://www.facebook.com/profile.php?id=100085898573695" target="_blank" rel="noopener noreferrer" class="text-decoration-none" aria-label="Facebook">
+                        <i class="bi bi-facebook fs-3"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/company/inclusive-green-energy-africa/" target="_blank" rel="noopener noreferrer" class="text-decoration-none" aria-label="LinkedIn">
+                        <i class="bi bi-linkedin fs-3"></i>
+                    </a>
+                    <a href="https://www.instagram.com/igea23?igsh=bG5jNmJoZ3h2cWhl" target="_blank" rel="noopener noreferrer" class="text-decoration-none" aria-label="Instagram">
+                        <i class="bi bi-instagram fs-3"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Team Hero Section */
+.team-hero-section {
+    position: relative;
+    padding: 80px 0;
+    margin-bottom: 50px;
+    background: url('{{ asset("images/MANGANI/team-background.jpg") }}') no-repeat center center;
+    background-size: cover;
+    color: white;
+    text-align: center;
+    border-radius: 0 0 15px 15px;
+    overflow: hidden;
+}
+
+.team-hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(40, 167, 69, 0.7);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.9;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.team-card {
+    padding: 0 0 2rem 0;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 0 5px; /* Add small margin for mobile */
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-color: #198754;
+}
+
+.team-image-container {
+    width: 100%;
+    height: 320px;
+    overflow: hidden;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    padding: 0;
+}
+
+.team-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.team-card:hover .team-img {
+    transform: scale(1.08);
+}
+
+.team-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 1.5rem;
+}
+
+.team-name {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+}
+
+.team-position {
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: #198754;
+    margin-bottom: 1rem;
+}
+
+.team-description {
+    line-height: 1.6;
+    font-size: 0.95rem;
+    color: #6c757d;
+}
+
+.empty-state {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Contact Us Section Styling */
+.contact-section {
+    background-color: #e9ecef;
+    text-align: center;
+}
+
+.contact-section h2.section-heading {
+    color: #28a745;
+    margin-bottom: 40px;
+    font-weight: 600;
+}
+
+.contact-section p {
+    margin-bottom: 15px;
+    color: #555;
+    line-height: 1.7;
+    font-size: 1.1rem;
+}
+
+.contact-section i {
+    color: #28a745;
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.contact-section .contact-info-details a {
+    color: #28a745;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.contact-section .contact-info-details a:hover {
+    color: #218838;
+    text-decoration: underline;
+}
+
+.contact-section .social-icons {
+    margin-top: 25px;
+}
+
+.contact-section .social-icons a {
+    color: #28a745;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
+}
+
+.contact-section .social-icons a:hover {
+    color: #218838;
+    transform: scale(1.15);
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 576px) {
+    .team-hero-section {
+        padding: 60px 0;
+    }
+    
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-content p {
+        font-size: 1rem;
+    }
+    
+    .team-image-container {
+        height: 300px; /* Taller on mobile for better visibility */
+        margin-bottom: 1rem;
+    }
+    
+    .team-img {
+        object-fit: contain; /* Show full image without cropping on mobile */
+        width: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    
+    .team-card {
+        margin: 0 15px 2rem 15px; /* More side margin on mobile */
+        padding: 0 0 1.5rem 0;
+    }
+    
+    .team-content {
+        padding: 0 1rem;
+    }
+    
+    .team-name {
+        font-size: 1.3rem; /* Larger text on mobile */
+        margin-bottom: 0.5rem;
+    }
+    
+    .team-position {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .team-description {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .row.justify-content-center {
+        margin: 0 -5px; /* Compensate for card margins */
+    }
+
+    /* Contact section mobile adjustments */
+    .contact-section {
+        padding: 40px 15px;
+    }
+    
+    .contact-section h2.section-heading {
+        font-size: 1.8rem;
+        margin-bottom: 30px;
+    }
+    
+    .contact-section p {
+        font-size: 1rem;
+    }
+    
+    .contact-section .social-icons a {
+        margin: 0 8px;
+    }
+}
+
+@media (min-width: 577px) and (max-width: 768px) {
+    .team-hero-section {
+        padding: 70px 0;
+    }
+    
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-content p {
+        font-size: 1.1rem;
+    }
+    
+    .team-image-container {
+        height: 280px;
+    }
+    
+    .team-img {
+        object-fit: cover; /* Use cover on tablets */
+    }
+    
+    .team-card {
+        margin: 0 8px 2rem 8px;
+    }
+
+    .contact-section {
+        padding: 50px 20px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    .team-hero-section {
+        padding: 80px 0;
+    }
+    
+    .team-image-container {
+        height: 300px;
+    }
+    
+    .team-card {
+        margin: 0 5px 2rem 5px;
+    }
+}
+
+@media (min-width: 993px) and (max-width: 1200px) {
+    .team-image-container {
+        height: 320px;
+    }
+}
+
+@media (min-width: 1201px) {
+    .team-image-container {
+        height: 340px;
+    }
+    
+    .team-card {
+        margin: 0 2px 2rem 2px;
+    }
+}
+
+/* Extra small devices adjustments */
+@media (max-width: 575.98px) {
+    .team-hero-section {
+        padding: 50px 0;
+        border-radius: 0;
+    }
+    
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+    
+    .team-image-container {
+        height: 250px;
+    }
+    
+    .team-card .team-name {
+        font-size: 1.1rem;
+    }
+    
+    .contact-section p {
+        font-size: 0.95rem;
+    }
+}
+</style>
 @endsection

@@ -62,17 +62,13 @@
                         @foreach($teamMembers as $member)
                         <div class="col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                @if($member->image)
-                                    <img src="{{ Storage::disk('public')->url($member->image) }}" 
+                                <!-- Updated Image Display -->
+                                <div class="team-dash-image-container me-3">
+                                    <img src="{{ $member->image_url }}" 
                                          alt="{{ $member->name }}" 
-                                         class="rounded me-3"
-                                         style="width: 60px; height: 60px; object-fit: cover;">
-                                @else
-                                    <div class="bg-light rounded d-flex align-items-center justify-content-center me-3"
-                                         style="width: 60px; height: 60px;">
-                                        <i class="bi bi-person text-muted"></i>
-                                    </div>
-                                @endif
+                                         class="team-dash-img"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/default-avatar.png') }}';">
+                                </div>
                                 <div class="flex-grow-1">
                                     <h6 class="mb-1">{{ $member->name }}</h6>
                                     <small class="text-muted">{{ $member->position }}</small>
@@ -113,23 +109,28 @@
                 @if($gallery->count() > 0)
                     <div class="row g-2">
                         @foreach($gallery->take(6) as $item)
-                        <div class="col-4">
-                            <div class="position-relative">
-                                <img src="{{ Storage::disk('public')->url($item->image) }}" 
-                                     alt="{{ $item->title }}" 
-                                     class="img-fluid rounded" 
-                                     style="height: 80px; width: 100%; object-fit: cover;">
+                        <div class="col-4 mb-3">
+                            <div class="gallery-dash-card position-relative">
+                                <!-- Updated Image Display -->
+                                <div class="gallery-dash-image-container">
+                                    <img src="{{ $item->image_url }}" 
+                                         alt="{{ $item->title }}" 
+                                         class="gallery-dash-img"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/default-image.png') }}';">
+                                </div>
+                                <div class="gallery-dash-overlay">
+                                    <div class="gallery-dash-content">
+                                        <small class="gallery-dash-title text-white">{{ Str::limit($item->title, 20) }}</small>
+                                    </div>
+                                </div>
                                 <div class="position-absolute top-0 end-0 m-1">
                                     <a href="{{ route('admin.gallery.edit', $item->id) }}" 
                                        class="btn btn-outline-primary btn-sm">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                 </div>
-                                <small class="d-block text-truncate mt-1" title="{{ $item->title }}">
-                                    {{ $item->title }}
-                                </small>
                                 @if(!$item->is_active)
-                                    <span class="badge bg-secondary">Inactive</span>
+                                    <span class="position-absolute top-0 start-0 m-1 badge bg-secondary">Inactive</span>
                                 @endif
                             </div>
                         </div>
@@ -288,4 +289,143 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Team Member Dashboard Styles */
+.team-dash-image-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.team-dash-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Gallery Dashboard Styles */
+.gallery-dash-card {
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.gallery-dash-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.gallery-dash-image-container {
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gallery-dash-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.gallery-dash-card:hover .gallery-dash-img {
+    transform: scale(1.05);
+}
+
+.gallery-dash-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: flex-end;
+    padding: 0.5rem;
+}
+
+.gallery-dash-card:hover .gallery-dash-overlay {
+    opacity: 1;
+}
+
+.gallery-dash-content {
+    transform: translateY(10px);
+    transition: transform 0.3s ease;
+}
+
+.gallery-dash-card:hover .gallery-dash-content {
+    transform: translateY(0);
+}
+
+.gallery-dash-title {
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 576px) {
+    .team-dash-image-container {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .gallery-dash-image-container {
+        height: 80px;
+    }
+    
+    .gallery-dash-img {
+        object-fit: contain;
+        width: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    
+    .gallery-dash-overlay {
+        opacity: 1;
+        background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.4) 100%);
+    }
+    
+    .gallery-dash-content {
+        transform: translateY(0);
+    }
+}
+
+@media (min-width: 577px) and (max-width: 768px) {
+    .gallery-dash-image-container {
+        height: 90px;
+    }
+    
+    .gallery-dash-img {
+        object-fit: cover;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    .gallery-dash-image-container {
+        height: 100px;
+    }
+}
+
+@media (min-width: 993px) {
+    .gallery-dash-image-container {
+        height: 110px;
+    }
+}
+</style>
 @endsection

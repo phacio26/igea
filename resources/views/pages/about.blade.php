@@ -5,7 +5,7 @@
 @section('content')
 <main>
     <!-- About Us Hero Section -->
-    <section class="about-hero-section animated-element">
+    <section class="about-hero-section">
         <div class="container hero-content">
             <h1>About Inclusive Green Energy Africa</h1>
             <p>Learn about our mission, vision, and commitment to sustainable energy solutions for all.</p>
@@ -99,6 +99,53 @@
         </div>
     </div>
 </section>
+
+<style>
+/* About Hero Section */
+.about-hero-section {
+    position: relative;
+    padding: 80px 0;
+    margin-bottom: 50px;
+    background: url('{{ asset("images/MANGANI/about-background.jpg") }}') no-repeat center center;
+    background-size: cover;
+    color: white;
+    text-align: center;
+    border-radius: 0 0 15px 15px;
+    overflow: hidden;
+}
+
+.about-hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(40, 167, 69, 0.7);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.9;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+</style>
 @endsection
 
 @section('scripts')

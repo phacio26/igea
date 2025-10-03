@@ -62,15 +62,18 @@ class AdminController extends Controller
                 'order' => 'nullable|integer',
             ]);
 
-            // Store image with original name
+            // Handle image upload
+            $imageName = null;
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $imagePath = $image->storeAs('team', $imageName, 'public');
+                $imageName = 'team_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
                 
-                Log::info('Team image stored', [
-                    'path' => $imagePath,
-                    'full_path' => storage_path('app/public/' . $imagePath)
+                // Store image in public disk
+                $image->storeAs('team', $imageName, 'public');
+                
+                Log::info('Team image stored successfully', [
+                    'file_name' => $imageName,
+                    'storage_path' => 'team/' . $imageName
                 ]);
             }
 
@@ -78,7 +81,7 @@ class AdminController extends Controller
                 'name' => $request->name,
                 'position' => $request->position,
                 'description' => $request->description,
-                'image' => $imagePath,
+                'image_path' => $imageName,
                 'order' => $request->order ?? 0,
                 'is_active' => $request->has('is_active'),
             ]);
@@ -110,23 +113,24 @@ class AdminController extends Controller
                 'order' => 'nullable|integer',
             ]);
 
-            $imagePath = $member->image;
+            $imageName = $member->image_path;
             if ($request->hasFile('image')) {
                 // Delete old image
-                if ($member->image && Storage::disk('public')->exists($member->image)) {
-                    Storage::disk('public')->delete($member->image);
+                if ($member->image_path && Storage::disk('public')->exists('team/' . $member->image_path)) {
+                    Storage::disk('public')->delete('team/' . $member->image_path);
                 }
+                
                 // Store new image
                 $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $imagePath = $image->storeAs('team', $imageName, 'public');
+                $imageName = 'team_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->storeAs('team', $imageName, 'public');
             }
 
             $member->update([
                 'name' => $request->name,
                 'position' => $request->position,
                 'description' => $request->description,
-                'image' => $imagePath,
+                'image_path' => $imageName,
                 'order' => $request->order ?? $member->order,
                 'is_active' => $request->has('is_active'),
             ]);
@@ -144,8 +148,8 @@ class AdminController extends Controller
             $member = TeamMember::findOrFail($id);
             
             // Delete image
-            if ($member->image && Storage::disk('public')->exists($member->image)) {
-                Storage::disk('public')->delete($member->image);
+            if ($member->image_path && Storage::disk('public')->exists('team/' . $member->image_path)) {
+                Storage::disk('public')->delete('team/' . $member->image_path);
             }
             
             $member->delete();
@@ -154,6 +158,21 @@ class AdminController extends Controller
 
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to delete team member: ' . $e->getMessage());
+        }
+    }
+
+    public function toggleTeamMemberStatus($id)
+    {
+        try {
+            $member = TeamMember::findOrFail($id);
+            $member->update([
+                'is_active' => !$member->is_active
+            ]);
+
+            return redirect()->route('admin.team.index')->with('success', 'Team member status updated successfully!');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to update team member status: ' . $e->getMessage());
         }
     }
 
@@ -179,22 +198,17 @@ class AdminController extends Controller
                 'order' => 'nullable|integer',
             ]);
 
-            // Store image with original name
+            $imageName = null;
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $imagePath = $image->storeAs('gallery', $imageName, 'public');
-                
-                Log::info('Gallery image stored', [
-                    'path' => $imagePath,
-                    'full_path' => storage_path('app/public/' . $imagePath)
-                ]);
+                $imageName = 'gallery_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->storeAs('gallery', $imageName, 'public');
             }
 
             Gallery::create([
                 'title' => $request->title,
                 'description' => $request->description,
-                'image' => $imagePath,
+                'image_path' => $imageName,
                 'order' => $request->order ?? 0,
                 'is_active' => $request->has('is_active'),
             ]);
@@ -225,22 +239,22 @@ class AdminController extends Controller
                 'order' => 'nullable|integer',
             ]);
 
-            $imagePath = $galleryItem->image;
+            $imageName = $galleryItem->image_path;
             if ($request->hasFile('image')) {
                 // Delete old image
-                if ($galleryItem->image && Storage::disk('public')->exists($galleryItem->image)) {
-                    Storage::disk('public')->delete($galleryItem->image);
+                if ($galleryItem->image_path && Storage::disk('public')->exists('gallery/' . $galleryItem->image_path)) {
+                    Storage::disk('public')->delete('gallery/' . $galleryItem->image_path);
                 }
                 // Store new image
                 $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $imagePath = $image->storeAs('gallery', $imageName, 'public');
+                $imageName = 'gallery_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->storeAs('gallery', $imageName, 'public');
             }
 
             $galleryItem->update([
                 'title' => $request->title,
                 'description' => $request->description,
-                'image' => $imagePath,
+                'image_path' => $imageName,
                 'order' => $request->order ?? $galleryItem->order,
                 'is_active' => $request->has('is_active'),
             ]);
@@ -258,8 +272,8 @@ class AdminController extends Controller
             $galleryItem = Gallery::findOrFail($id);
             
             // Delete image
-            if ($galleryItem->image && Storage::disk('public')->exists($galleryItem->image)) {
-                Storage::disk('public')->delete($galleryItem->image);
+            if ($galleryItem->image_path && Storage::disk('public')->exists('gallery/' . $galleryItem->image_path)) {
+                Storage::disk('public')->delete('gallery/' . $galleryItem->image_path);
             }
             
             $galleryItem->delete();
@@ -268,6 +282,49 @@ class AdminController extends Controller
 
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to delete gallery image: ' . $e->getMessage());
+        }
+    }
+
+    // Image Display Methods
+    public function showTeamMemberImage($id)
+    {
+        try {
+            $teamMember = TeamMember::findOrFail($id);
+            
+            if ($teamMember->image_path && Storage::disk('public')->exists('team/' . $teamMember->image_path)) {
+                $path = storage_path('app/public/team/' . $teamMember->image_path);
+                
+                if (file_exists($path)) {
+                    return response()->file($path);
+                }
+            }
+            
+            // Return default image
+            return response()->file(public_path('images/default-avatar.png'));
+            
+        } catch (\Exception $e) {
+            return response()->file(public_path('images/default-avatar.png'));
+        }
+    }
+
+    public function showGalleryImage($id)
+    {
+        try {
+            $gallery = Gallery::findOrFail($id);
+            
+            if ($gallery->image_path && Storage::disk('public')->exists('gallery/' . $gallery->image_path)) {
+                $path = storage_path('app/public/gallery/' . $gallery->image_path);
+                
+                if (file_exists($path)) {
+                    return response()->file($path);
+                }
+            }
+            
+            // Return default image
+            return response()->file(public_path('images/default-image.png'));
+            
+        } catch (\Exception $e) {
+            return response()->file(public_path('images/default-image.png'));
         }
     }
 

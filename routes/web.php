@@ -14,6 +14,30 @@ Route::get('/create-admin-user', [AuthController::class, 'createAdminUser']);
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
+// Public Image Display Routes - FIXED ROUTES
+Route::get('/team-member-image/{id}', [AdminController::class, 'showTeamMemberImage'])->name('team.image');
+Route::get('/gallery-image/{id}', [AdminController::class, 'showGalleryImage'])->name('gallery.image');
+
+// Debug route (remove after testing)
+Route::get('/debug-images', function() {
+    $teamMembers = \App\Models\TeamMember::all();
+    $debug = [];
+    
+    foreach ($teamMembers as $member) {
+        $debug[] = [
+            'id' => $member->id,
+            'name' => $member->name,
+            'image_path' => $member->image_path,
+            'image_url' => $member->image_url,
+            'storage_exists' => $member->image_path ? \Illuminate\Support\Facades\Storage::disk('public')->exists('team/' . $member->image_path) : false,
+            'file_path' => $member->image_path ? storage_path('app/public/team/' . $member->image_path) : null,
+            'file_exists' => $member->image_path ? file_exists(storage_path('app/public/team/' . $member->image_path)) : false,
+        ];
+    }
+    
+    return response()->json($debug);
+});
+
 // Public Routes
 Route::get('/', function () {
     try {
@@ -194,7 +218,6 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::post('/update/{id}', [AdminController::class, 'updateTeamMember'])->name('admin.team.update');
         Route::delete('/delete/{id}', [AdminController::class, 'deleteTeamMember'])->name('admin.team.delete');
         Route::patch('/toggle-status/{id}', [AdminController::class, 'toggleTeamMemberStatus'])->name('admin.team.toggle-status');
-        Route::get('/{id}/image', [AdminController::class, 'showTeamMemberImage'])->name('admin.team.image');
     });
     
     // Gallery Routes
@@ -205,7 +228,6 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::get('/edit/{id}', [AdminController::class, 'editGalleryImage'])->name('admin.gallery.edit');
         Route::post('/update/{id}', [AdminController::class, 'updateGalleryImage'])->name('admin.gallery.update');
         Route::delete('/delete/{id}', [AdminController::class, 'deleteGalleryImage'])->name('admin.gallery.delete');
-        Route::get('/{id}/image', [AdminController::class, 'showGalleryImage'])->name('admin.gallery.image');
     });
     
     // Page Routes
