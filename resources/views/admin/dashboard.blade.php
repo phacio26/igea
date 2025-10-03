@@ -207,11 +207,7 @@
                             <i class="bi bi-house me-2"></i>Edit Home Page
                         </a>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{{ route('admin.pages.edit', 'about') }}" class="btn btn-outline-primary w-100">
-                            <i class="bi bi-info-circle me-2"></i>Edit About Page
-                        </a>
-                    </div>
+                     
                     <div class="col-md-3 mb-3">
                         <a href="{{ route('admin.team.create') }}" class="btn btn-outline-primary w-100">
                             <i class="bi bi-person-plus me-2"></i>Add Team Member

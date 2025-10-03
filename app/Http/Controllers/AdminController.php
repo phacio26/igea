@@ -15,7 +15,7 @@ class AdminController extends Controller
     // ... your existing methods ...
 
     /**
-     * Update page content
+     * Update page content - FIXED VERSION
      */
     public function updatePageContent(Request $request, $pageSlug)
     {
@@ -23,7 +23,7 @@ class AdminController extends Controller
         
         // Validate the request
         $request->validate([
-            'hero_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'hero_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200', // 50MB
             'content.stats.products_sold' => 'required|integer|min:0',
             'content.stats.people_reached' => 'required|integer|min:0',
             'content.stats.eco_friendly' => 'required|integer|min:0|max:100',
@@ -32,14 +32,19 @@ class AdminController extends Controller
         // Get existing content or create new array
         $content = $page->content ? json_decode($page->content, true) : [];
         
-        // Handle image uploads
+        // Handle image uploads - FIXED LOGIC
         $heroImages = [];
         $existingImages = $request->input('existing_images', []);
         
-        // Process each image field
+        // Process uploaded files while preserving existing images
         if ($request->hasFile('hero_images')) {
-            foreach ($request->file('hero_images') as $index => $file) {
-                if ($file && $file->isValid()) {
+            $uploadedFiles = $request->file('hero_images');
+            
+            foreach ($existingImages as $index => $existingImage) {
+                // Check if a new file was uploaded for this position
+                if (isset($uploadedFiles[$index]) && $uploadedFiles[$index] && $uploadedFiles[$index]->isValid()) {
+                    $file = $uploadedFiles[$index];
+                    
                     // Generate unique filename
                     $filename = 'home-bg-' . time() . '-' . $index . '.' . $file->getClientOriginalExtension();
                     
@@ -48,18 +53,18 @@ class AdminController extends Controller
                     
                     // Add to images array with public path
                     $heroImages[] = 'storage/home-backgrounds/' . $filename;
-                } elseif (isset($existingImages[$index]) && !empty($existingImages[$index])) {
-                    // Keep existing image if no new file was uploaded
-                    $heroImages[] = $existingImages[$index];
+                } else {
+                    // Keep existing image if no new file was uploaded for this position
+                    $heroImages[] = $existingImage;
                 }
             }
         } else {
             // If no new files uploaded, keep all existing images
-            $heroImages = array_filter($existingImages); // Remove empty values
+            $heroImages = $existingImages;
         }
         
         // Ensure we have at least one image
-        if (empty($heroImages)) {
+        if (empty($heroImages) || empty(array_filter($heroImages))) {
             $heroImages = [
                 'images/MANGANI/IMG-20250307-WA0460.jpg',
                 'images/MANGANI/IMG-20250307-WA0464.jpg',
@@ -220,7 +225,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Team Management Methods
+     * Team Management Methods - UPDATED WITH LARGER FILE SIZE
      */
     public function manageTeam()
     {
@@ -239,7 +244,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:51200', // 50MB
             'order' => 'required|integer',
             'is_active' => 'boolean',
         ]);
@@ -278,7 +283,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200', // 50MB
             'order' => 'required|integer',
             'is_active' => 'boolean',
         ]);
@@ -334,8 +339,22 @@ class AdminController extends Controller
     }
 
     /**
-     * Gallery Management Methods
-     */
+ * Delete a page
+ */
+public function deletePage($id)
+{
+    $page = Page::findOrFail($id);
+    
+    // Prevent deletion of home page
+    if ($page->slug === 'home') {
+        return redirect()->route('admin.pages.index')->with('error', 'Home page cannot be deleted.');
+    }
+    
+    $pageTitle = $page->title;
+    $page->delete();
+
+    return redirect()->route('admin.pages.index')->with('success', "Page '{$pageTitle}' deleted successfully!");
+}
     public function manageGallery()
     {
         $gallery = Gallery::orderBy('order')->get();
@@ -352,7 +371,7 @@ class AdminController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:51200', // 50MB
             'order' => 'required|integer',
             'is_active' => 'boolean',
         ]);
@@ -389,7 +408,7 @@ class AdminController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:51200', // 50MB
             'order' => 'required|integer',
             'is_active' => 'boolean',
         ]);

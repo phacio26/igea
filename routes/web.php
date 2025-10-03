@@ -237,6 +237,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     });
     
     // Page Routes - FIXED: Added PUT route for page updates
+    Route::delete('/admin/pages/{id}/delete', [AdminController::class, 'deletePage'])->name('admin.pages.delete');
     Route::prefix('pages')->group(function () {
         Route::get('/', [AdminController::class, 'listPages'])->name('admin.pages.index');
         Route::get('/edit/{pageSlug}', [AdminController::class, 'editPage'])->name('admin.pages.edit');
