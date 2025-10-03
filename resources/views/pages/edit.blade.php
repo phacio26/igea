@@ -9,14 +9,9 @@
             <div class="card">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Edit Home Page</h4>
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('admin.dashboard') }}" class="btn btn-light btn-sm">
-                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
-                        </a>
-                        <a href="{{ route('admin.pages.index') }}" class="btn btn-light btn-sm">
-                            <i class="bi bi-arrow-left me-1"></i> Back to Pages
-                        </a>
-                    </div>
+                    <a href="{{ route('admin.pages.index') }}" class="btn btn-light btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Pages
+                    </a>
                 </div>
                 <div class="card-body">
                     @if(session('success'))
@@ -27,20 +22,7 @@
                         </div>
                     @endif
 
-                    @if($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            Please fix the following errors:
-                            <ul class="mb-0 mt-1">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
-                    <form action="{{ route('admin.pages.update', $page->slug) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.pages.update', $page->slug) }}" method="POST">
                         @csrf
                         @method('PUT')
 
@@ -52,7 +34,7 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">Upload Background Images</label>
+                                            <label class="form-label fw-semibold">Background Image URLs</label>
                                             <div id="hero-images-container">
                                                 @php
                                                     $heroImages = isset($page->content['hero_images']) ? $page->content['hero_images'] : [
@@ -64,31 +46,12 @@
                                                 @endphp
                                                 
                                                 @foreach($heroImages as $index => $image)
-                                                <div class="image-upload-item mb-3 p-3 border rounded">
-                                                    <div class="row align-items-center">
-                                                        <div class="col-md-4">
-                                                            @if(file_exists(public_path($image)))
-                                                                <img src="{{ asset($image) }}" class="img-thumbnail existing-image" style="height: 100px; object-fit: cover;">
-                                                            @else
-                                                                <div class="text-muted text-center py-4 border">
-                                                                    <i class="bi bi-image fs-1"></i>
-                                                                    <p class="small mb-0">No image</p>
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <input type="file" class="form-control image-upload" name="hero_images[]" accept="image/*">
-                                                            <input type="hidden" name="existing_images[]" value="{{ $image }}">
-                                                            <div class="form-text small">
-                                                                Max: 5MB, Recommended: 1920x1080px
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <button type="button" class="btn btn-outline-danger remove-image" {{ count($heroImages) <= 1 ? 'disabled' : '' }}>
-                                                                <i class="bi bi-trash"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" name="content[hero_images][]" 
+                                                           value="{{ $image }}" placeholder="Enter image URL">
+                                                    <button type="button" class="btn btn-outline-danger remove-image" {{ count($heroImages) <= 1 ? 'disabled' : '' }}>
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
                                                 </div>
                                                 @endforeach
                                             </div>
@@ -96,7 +59,7 @@
                                                 <i class="bi bi-plus"></i> Add Another Image
                                             </button>
                                             <div class="form-text">
-                                                Upload 4 images for the slideshow. Leave empty to keep existing images.
+                                                Enter the file paths for background images (4 images recommended for slideshow)
                                             </div>
                                         </div>
                                     </div>
@@ -168,28 +131,12 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-image').addEventListener('click', function() {
         const container = document.getElementById('hero-images-container');
         const newInput = document.createElement('div');
-        newInput.className = 'image-upload-item mb-3 p-3 border rounded';
+        newInput.className = 'input-group mb-2';
         newInput.innerHTML = `
-            <div class="row align-items-center">
-                <div class="col-md-4">
-                    <div class="text-muted text-center py-4 border">
-                        <i class="bi bi-image fs-1"></i>
-                        <p class="small mb-0">No image selected</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <input type="file" class="form-control image-upload" name="hero_images[]" accept="image/*" required>
-                    <input type="hidden" name="existing_images[]" value="">
-                    <div class="form-text small">
-                        Max: 5MB, Recommended: 1920x1080px
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-outline-danger remove-image">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>
+            <input type="text" class="form-control" name="content[hero_images][]" placeholder="Enter image URL">
+            <button type="button" class="btn btn-outline-danger remove-image">
+                <i class="bi bi-trash"></i>
+            </button>
         `;
         container.appendChild(newInput);
         
@@ -205,32 +152,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.classList.contains('remove-image') || e.target.closest('.remove-image')) {
             const button = e.target.classList.contains('remove-image') ? e.target : e.target.closest('.remove-image');
             const container = document.getElementById('hero-images-container');
-            const items = container.querySelectorAll('.image-upload-item');
+            const inputs = container.querySelectorAll('.input-group');
             
-            if (items.length > 1) {
-                button.closest('.image-upload-item').remove();
+            if (inputs.length > 1) {
+                button.closest('.input-group').remove();
                 
                 // Disable remove buttons if only 1 image left
-                if (items.length === 2) { // 2 because we're about to remove one
+                if (inputs.length === 2) { // 2 because we're about to remove one
                     document.querySelectorAll('.remove-image').forEach(btn => btn.disabled = true);
                 }
-            }
-        }
-    });
-
-    // Preview image when selected
-    document.addEventListener('change', function(e) {
-        if (e.target.classList.contains('image-upload')) {
-            const file = e.target.files[0];
-            const item = e.target.closest('.image-upload-item');
-            const previewContainer = item.querySelector('.col-md-4');
-            
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewContainer.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="height: 100px; object-fit: cover;">`;
-                };
-                reader.readAsDataURL(file);
             }
         }
     });
@@ -256,14 +186,6 @@ document.addEventListener('DOMContentLoaded', function() {
 .form-control:focus {
     border-color: #198754;
     box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
-}
-
-.image-upload-item {
-    background-color: #f8f9fa;
-}
-
-.image-upload-item:hover {
-    background-color: #e9ecef;
 }
 </style>
 @endsection

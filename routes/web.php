@@ -17,6 +17,7 @@ Route::post('/login', [AuthController::class, 'login']);
 // Public Image Display Routes - FIXED ROUTES
 Route::get('/team-member-image/{id}', [AdminController::class, 'showTeamMemberImage'])->name('team.image');
 Route::get('/gallery-image/{id}', [AdminController::class, 'showGalleryImage'])->name('gallery.image');
+Route::get('/home-bg-image/{filename}', [AdminController::class, 'showHomeBackgroundImage'])->name('home.bg.image');
 
 // Debug route (remove after testing)
 Route::get('/debug-images', function() {
@@ -56,20 +57,23 @@ Route::get('/', function () {
     }
     
     $defaultContent = [
+        'hero_images' => [
+            'images/MANGANI/IMG-20250307-WA0460.jpg',
+            'images/MANGANI/IMG-20250307-WA0464.jpg',
+            'images/MANGANI/IMG-20250307-WA0460.jpg',
+            'images/MANGANI/IMG-20250307-WA0461.jpg'
+        ],
+        'stats' => [
+            'products_sold' => 1286,
+            'people_reached' => 5000,
+            'eco_friendly' => 100
+        ],
         'hero' => [
             'title' => 'Inclusive Green Energy Africa',
             'subtitle' => 'Empowering Communities Through Sustainable Energy',
             'description' => 'Providing innovative solar energy solutions to drive economic growth and environmental sustainability across Africa.'
         ],
         'why_choose_title' => 'Why Choose Inclusive Green Energy Africa?',
-        'stats' => [
-            'products_sold' => '500+',
-            'products_sold_text' => 'Products Sold',
-            'people_reached' => '10,000+',
-            'people_reached_text' => 'People Reached',
-            'eco_friendly' => '100%',
-            'eco_friendly_text' => 'Eco Friendly'
-        ],
         'products_title' => 'Our Products & Services',
         'products' => [
             [
@@ -209,32 +213,35 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     
-    // Team Members Routes
+    // Team Members Routes - FIXED: Added PUT routes
     Route::prefix('team')->group(function () {
         Route::get('/', [AdminController::class, 'manageTeam'])->name('admin.team.index');
         Route::get('/create', [AdminController::class, 'createTeamMember'])->name('admin.team.create');
         Route::post('/store', [AdminController::class, 'storeTeamMember'])->name('admin.team.store');
         Route::get('/edit/{id}', [AdminController::class, 'editTeamMember'])->name('admin.team.edit');
-        Route::post('/update/{id}', [AdminController::class, 'updateTeamMember'])->name('admin.team.update');
+        Route::put('/update/{id}', [AdminController::class, 'updateTeamMember'])->name('admin.team.update'); // FIXED: Changed to PUT
+        Route::post('/update/{id}', [AdminController::class, 'updateTeamMember'])->name('admin.team.update.post'); // Alternative POST route
         Route::delete('/delete/{id}', [AdminController::class, 'deleteTeamMember'])->name('admin.team.delete');
         Route::patch('/toggle-status/{id}', [AdminController::class, 'toggleTeamMemberStatus'])->name('admin.team.toggle-status');
     });
     
-    // Gallery Routes
+    // Gallery Routes - FIXED: Added PUT routes
     Route::prefix('gallery')->group(function () {
         Route::get('/', [AdminController::class, 'manageGallery'])->name('admin.gallery.index');
         Route::get('/create', [AdminController::class, 'createGalleryImage'])->name('admin.gallery.create');
         Route::post('/store', [AdminController::class, 'storeGalleryImage'])->name('admin.gallery.store');
         Route::get('/edit/{id}', [AdminController::class, 'editGalleryImage'])->name('admin.gallery.edit');
-        Route::post('/update/{id}', [AdminController::class, 'updateGalleryImage'])->name('admin.gallery.update');
+        Route::put('/update/{id}', [AdminController::class, 'updateGalleryImage'])->name('admin.gallery.update'); // FIXED: Changed to PUT
+        Route::post('/update/{id}', [AdminController::class, 'updateGalleryImage'])->name('admin.gallery.update.post'); // Alternative POST route
         Route::delete('/delete/{id}', [AdminController::class, 'deleteGalleryImage'])->name('admin.gallery.delete');
     });
     
-    // Page Routes
+    // Page Routes - FIXED: Added PUT route for page updates
     Route::prefix('pages')->group(function () {
         Route::get('/', [AdminController::class, 'listPages'])->name('admin.pages.index');
         Route::get('/edit/{pageSlug}', [AdminController::class, 'editPage'])->name('admin.pages.edit');
-        Route::post('/update/{pageSlug}', [AdminController::class, 'updatePageContent'])->name('admin.pages.update');
+        Route::put('/update/{pageSlug}', [AdminController::class, 'updatePageContent'])->name('admin.pages.update'); // FIXED: Changed to PUT
+        Route::post('/update/{pageSlug}', [AdminController::class, 'updatePageContent'])->name('admin.pages.update.post'); // Alternative POST route
     });
 });
 

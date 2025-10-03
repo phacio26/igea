@@ -15,7 +15,7 @@
     <div class="col-md-3 mb-4">
         <div class="card text-white bg-success">
             <div class="card-body text-center">
-                <h2>{{ $stats['pages_count'] }}</h2>
+                <h2>{{ $pageCount }}</h2>
                 <p class="mb-0">Pages</p>
             </div>
         </div>
@@ -23,7 +23,7 @@
     <div class="col-md-3 mb-4">
         <div class="card text-white bg-primary">
             <div class="card-body text-center">
-                <h2>{{ $stats['team_count'] }}</h2>
+                <h2>{{ $teamCount }}</h2>
                 <p class="mb-0">Team Members</p>
             </div>
         </div>
@@ -31,7 +31,7 @@
     <div class="col-md-3 mb-4">
         <div class="card text-white bg-warning">
             <div class="card-body text-center">
-                <h2>{{ $stats['gallery_count'] }}</h2>
+                <h2>{{ $galleryCount }}</h2>
                 <p class="mb-0">Gallery Items</p>
             </div>
         </div>
@@ -39,7 +39,7 @@
     <div class="col-md-3 mb-4">
         <div class="card text-white bg-info">
             <div class="card-body text-center">
-                <h2>{{ $stats['active_gallery'] }}</h2>
+                <h2>{{ $activeGalleryItems }}</h2>
                 <p class="mb-0">Active Gallery</p>
             </div>
         </div>

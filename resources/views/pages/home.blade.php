@@ -6,10 +6,17 @@
 <!-- Hero Section with Slideshow -->
 <section class="hero-section">
     <div class="slideshow-container">
-        <img src="{{ asset('images/MANGANI/IMG-20250307-WA0460.jpg') }}" alt="Solar panel installation progress">
-        <img src="{{ asset('images/MANGANI/IMG-20250307-WA0464.jpg') }}" alt="Community benefiting from solar energy">
-        <img src="{{ asset('images/MANGANI/IMG-20250307-WA0460.jpg') }}" alt="Close-up of solar panels">
-        <img src="{{ asset('images/MANGANI/IMG-20250307-WA0461.jpg') }}" alt="Sustainable energy solutions in Africa">
+        @if(isset($content['hero_images']) && count($content['hero_images']) > 0)
+            @foreach($content['hero_images'] as $image)
+                <img src="{{ asset($image) }}" alt="Inclusive Green Energy Africa">
+            @endforeach
+        @else
+            <!-- Default images -->
+            <img src="{{ asset('images/MANGANI/IMG-20250307-WA0460.jpg') }}" alt="Solar panel installation progress">
+            <img src="{{ asset('images/MANGANI/IMG-20250307-WA0464.jpg') }}" alt="Community benefiting from solar energy">
+            <img src="{{ asset('images/MANGANI/IMG-20250307-WA0460.jpg') }}" alt="Close-up of solar panels">
+            <img src="{{ asset('images/MANGANI/IMG-20250307-WA0461.jpg') }}" alt="Sustainable energy solutions in Africa">
+        @endif
     </div>
     <div class="text-above-image scroll-up" id="hero-text">
         <h1>WELCOME TO</h1>
@@ -53,6 +60,7 @@
         </div>
     </section>
 
+    <!-- Rest of your home page content remains the same -->
     <!-- Why Go For Our Products and Services Section -->
     <section id="why-go-for-our-products" class="content-section">
          <div class="container">
@@ -183,249 +191,6 @@
 </div>
 @endsection
 
-@section('styles')
-<style>
-    /* Footer styling */
-    footer {
-        width: 100%;
-        background-color: rgb(116, 119, 116);
-        color: white;
-        padding: 20px 0;
-        text-align: center;
-        z-index: 1000;
-        margin-top: 40px;
-    }
-
-    /* Body styling */
-    body {
-        padding-bottom: 0;
-        padding-top: 56px;
-        position: relative;
-        min-height: 100vh;
-        font-family: 'Poppins', sans-serif;
-        background-color: #f8f9fa;
-        overflow-x: hidden;
-    }
-
-    /* Hero Section */
-    .hero-section {
-        position: relative;
-        height: 100vh;
-        overflow: hidden;
-    }
-
-    .slideshow-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-    }
-
-    .slideshow-container img {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0;
-        transition: opacity 1s ease-in-out;
-        animation: slideshow 12s infinite;
-    }
-    .slideshow-container img:nth-child(1) { animation-delay: 0s; }
-    .slideshow-container img:nth-child(2) { animation-delay: 3s; }
-    .slideshow-container img:nth-child(3) { animation-delay: 6s; }
-    .slideshow-container img:nth-child(4) { animation-delay: 9s; }
-
-    @keyframes slideshow {
-        0%, 20%, 100% { opacity: 0; }
-        25%, 95% { opacity: 1; }
-    }
-
-    /* Text Above Image */
-    .text-above-image {
-        position: absolute;
-        top: 25%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        color: green;
-        z-index: 1;
-        transition: opacity 1s ease, transform 1s ease;
-    }
-    .text-above-image h1 { font-size: 3rem; font-weight: bold; margin-bottom: 10px; }
-    .text-above-image h2 { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; }
-    .text-above-image p { font-size: 1.5rem; }
-    .scroll-down { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
-    .scroll-up { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-
-    /* Counter Number Styling */
-    .counter-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #333;
-        transition: all 0.3s ease;
-    }
-
-    /* Theme */
-    .bg-green { background-color: #28a745; color: white; }
-    .text-green { color: #28a745; }
-    .btn-green { background-color: #28a745; color: white; border: none; }
-    .btn-green:hover { background-color: #218838; color: white; }
-
-    /* --- Section Base Styling & Observer Animation --- */
-    .content-section {
-         padding: 60px 0;
-         opacity: 0;
-         transform: translateY(30px);
-         transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-         will-change: opacity, transform;
-    }
-    .content-section.visible {
-         opacity: 1;
-         transform: translateY(0);
-    }
-    #why-choose-us { background-color: #ffffff; }
-    #why-go-for-our-products { background-color: #e0f2e3; }
-    #view-gallery-section { background-color: #ffffff; }
-    .contact-section { background-color: #e0f2e3; }
-
-    /* Section Heading */
-     .section-heading {
-        font-size: 2.2rem; font-weight: 600; margin-bottom: 40px;
-        text-align: center; color: #28a745;
-    }
-
-    /* --- Why Choose Us Section - Card Styling & ANIMATIONS --- */
-    #why-choose-us .stats-card {
-        background-color: #ffc107;
-        padding: 25px; border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        text-align: center; height: 100%; color: #333;
-        margin-bottom: 20px;
-        opacity: 0;
-        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        will-change: transform, opacity;
-    }
-    #why-choose-us .row > div:nth-child(1) .stats-card { transform: translateX(-80px); transition-delay: 0.1s; }
-    #why-choose-us .row > div:nth-child(2) .stats-card { transform: scale(0.7) translateY(50px); transition-delay: 0.2s; }
-    #why-choose-us .row > div:nth-child(3) .stats-card { transform: translateX(80px); transition-delay: 0.3s; }
-    #why-choose-us.visible .row > div:nth-child(1) .stats-card,
-    #why-choose-us.visible .row > div:nth-child(3) .stats-card { opacity: 1; transform: translateX(0); }
-    #why-choose-us.visible .row > div:nth-child(2) .stats-card { opacity: 1; transform: scale(1) translateY(0); }
-    #why-choose-us .stats-card:hover {
-        transform: translateY(-5px) scale(1.03);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
-    }
-    #why-choose-us .stats-card i { font-size: 2.5rem; margin-bottom: 10px; }
-    #why-choose-us .stats-card h3 { margin-bottom: 5px;}
-    #why-choose-us .stats-card p { font-size: 1rem; margin-bottom: 0; }
-
-    /* Why Go For Our Products - Rectangle Styling & Animation */
-    .animated-border-box {
-         position: relative; text-align: center; padding: 35px 25px;
-         background-color: #ffffff; border-radius: 8px;
-         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); height: 100%;
-         overflow: hidden;
-         transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
-         z-index: 1;
-     }
-     .animated-border-box:hover {
-         transform: translateY(-5px);
-         box-shadow: 0 8px 20px rgba(40, 167, 69, 0.15);
-     }
-    .animated-border-box i { font-size: 3rem; margin-bottom: 15px; color: #28a745; }
-    .animated-border-box h3 { font-size: 1.4rem; font-weight: 600; margin-bottom: 10px; color: #343a40; }
-    .animated-border-box p { font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 0; }
-    .border-line { position: absolute; background-color: #28a745; transition: all 0.3s ease-out; z-index: 0; }
-    .border-line-top { top: 0; left: 0; width: 0; height: 3px; transition-delay: 0.6s; }
-    .border-line-right { top: 0; right: 0; width: 3px; height: 0; transition-delay: 0s; }
-    .border-line-bottom { bottom: 0; right: 0; width: 0; height: 3px; transition-delay: 0.2s; }
-    .border-line-left { bottom: 0; left: 0; width: 3px; height: 0; transition-delay: 0.4s; }
-    .animated-border-box:hover .border-line-top { width: 100%; }
-    .animated-border-box:hover .border-line-right { height: 100%; }
-    .animated-border-box:hover .border-line-bottom { width: 100%; }
-    .animated-border-box:hover .border-line-left { height: 100%; }
-
-    /* --- Gallery Modal Styling --- */
-    .modal-gallery-image {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-        border-radius: 5px;
-        margin-bottom: 0;
-        transition: transform 0.2s ease-in-out;
-    }
-    .modal-gallery-image:hover {
-         transform: scale(1.03);
-    }
-    .modal-body .row > div {
-         margin-bottom: 1rem;
-    }
-     .modal-body {
-         max-height: 75vh;
-         overflow-y: auto;
-     }
-
-    /* Contact Us Section Base Styling */
-    .contact-section {
-        padding: 60px 0;
-        margin-bottom: 40px;
-        text-align: center;
-    }
-    .contact-section h2.section-heading { margin-bottom: 40px; }
-    .contact-section p { margin-bottom: 15px; color: #333; line-height: 1.7; font-size: 1.1rem; }
-    .contact-section i { color: #28a745; margin-right: 10px; width: 20px; text-align: center; vertical-align: middle;}
-    .contact-section .contact-info a { color: #28a745; text-decoration: none; transition: color 0.3s ease; font-weight: 500;}
-    .contact-section .contact-info a:hover { color: #218838; text-decoration: underline; }
-    .contact-section .social-icons { margin-top: 25px; }
-    .contact-section .social-icons a { color: #28a745; transition: color 0.3s ease, transform 0.3s ease; display: inline-block; margin: 0 10px; }
-    .contact-section .social-icons a:hover { color: #218838; transform: scale(1.15); }
-
-    /* Footer Animation */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .copyright {
-        font-size: 0.9rem; animation: fadeIn 1s 1s ease-out forwards;
-        opacity: 0; color: #eee;
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 991px) {
-        .animated-border-box { margin-bottom: 30px; }
-        #why-choose-us .row > div { margin-bottom: 20px; }
-        #why-choose-us .row > div:last-child { margin-bottom: 0; }
-    }
-
-    @media (max-width: 768px) {
-        .text-above-image h1 { font-size: 2rem; } .text-above-image h2 { font-size: 1.8rem; } .text-above-image p { font-size: 1.2rem; }
-        .content-section, .contact-section { padding: 50px 15px; }
-        .section-heading { font-size: 1.8rem; margin-bottom: 30px; }
-        .contact-section h2.section-heading { font-size: 1.8rem; }
-        .contact-section p { font-size: 1rem; }
-        .modal-gallery-image { height: 200px; }
-        .counter-number { font-size: 2rem; }
-    }
-
-    @media (max-width: 576px) {
-        body { padding-top: 56px; }
-        .text-above-image { top: 30%; }
-        .text-above-image h1 { font-size: 1.5rem; } .text-above-image h2 { font-size: 1.3rem; } .text-above-image p { font-size: 1rem; }
-        .content-section, .contact-section { padding: 40px 15px; }
-        .section-heading { font-size: 1.6rem; }
-        .contact-section h2.section-heading { margin-bottom: 20px; font-size: 1.6rem; }
-        .contact-section p { font-size: 0.95rem; }
-        footer { padding: 15px 0; }
-        .copyright { font-size: 0.8rem; }
-        .animated-border-box { padding: 25px 15px; }
-        .counter-number { font-size: 1.8rem; }
-        .modal-gallery-image { height: 180px; }
-    }
-</style>
-@endsection
-
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -484,6 +249,11 @@
 
         // Counter Animation Function
         function startCounterAnimation() {
+            // Get dynamic numbers from content or use defaults
+            const productsCount = {{ $content['stats']['products_sold'] ?? 1286 }};
+            const peopleCount = {{ $content['stats']['people_reached'] ?? 5000 }};
+            const ecoPercentage = {{ $content['stats']['eco_friendly'] ?? 100 }};
+
             // Function to animate counting
             function animateCounter(elementId, targetNumber, suffix = '', duration = 2000) {
                 const element = document.getElementById(elementId);
@@ -509,9 +279,9 @@
             }
 
             // Start animations with different durations for better effect
-            animateCounter('productsCounter', 1286, '+', 2500);
-            animateCounter('peopleCounter', 5000, '+', 3000);
-            animateCounter('ecoCounter', 100, '%', 2000);
+            animateCounter('productsCounter', productsCount, '+', 2500);
+            animateCounter('peopleCounter', peopleCount, '+', 3000);
+            animateCounter('ecoCounter', ecoPercentage, '%', 2000);
         }
 
         // Update Copyright Year
