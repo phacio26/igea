@@ -1,3 +1,24 @@
+/* Navbar Brand with Text */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.navbar-logo {
+    height: 45px;
+    width: auto;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.brand-text {
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
 /* Footer styling */
 footer {
     width: 100%;
@@ -133,11 +154,28 @@ body {
 .navbar-custom .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
-.navbar-logo { 
-    height: 45px; 
-    width: auto; 
-    margin-right: 10px; 
-    vertical-align: middle; 
+
+/* Mobile responsiveness for brand */
+@media (max-width: 768px) {
+    .brand-text {
+        font-size: 0.9rem;
+    }
+    
+    .navbar-logo {
+        height: 35px;
+        margin-right: 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .brand-text {
+        display: none; /* Hide text on very small screens */
+    }
+    
+    .navbar-logo {
+        height: 32px;
+        margin-right: 0;
+    }
 }
 
 /* Section Base Styling & Observer Animation */
