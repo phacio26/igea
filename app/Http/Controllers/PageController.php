@@ -5,81 +5,49 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\TeamMember;
 use App\Models\Gallery;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class PageController extends Controller
 {
+    /**
+     * Display home page
+     */
+    public function home()
+    {
+        $page = Page::where('slug', 'home')->firstOrFail();
+        
+        // Decode content if it's JSON
+        if ($page->content && is_string($page->content)) {
+            $page->content = json_decode($page->content, true);
+        }
+        
+        // Get active team members for the team section
+        $teamMembers = TeamMember::where('is_active', true)
+            ->orderBy('order')
+            ->get();
+
+        // Get active gallery items
+        $galleryItems = Gallery::where('is_active', true)
+            ->orderBy('order')
+            ->get();
+
+        return view('pages.home', compact('page', 'teamMembers', 'galleryItems'));
+    }
+
     /**
      * Display about page
      */
     public function about()
     {
-        $page = Page::where('slug', 'about')->first();
+        $page = Page::where('slug', 'about')->firstOrFail();
         
-        $defaultContent = [
-            'hero' => [
-                'title' => 'About Inclusive Green Energy Africa',
-                'subtitle' => 'Learn about our mission, vision, and commitment to sustainable energy solutions for all.'
-            ],
-            'sections' => [
-                'who_we_are' => [
-                    'title' => 'Who We Are',
-                    'content' => 'INCLUSIVE GREEN ENERGY AFRICA is a Malawian enterprise providing electrical and renewable energy systems solutions for homes, trade, and industry. Depending on customer needs, the enterprise offers energy systems sizing, installation, end-user training, system warranty agreements, and comprehensive after-sales services.'
-                ],
-                'vision' => [
-                    'title' => 'Our Vision',
-                    'content' => 'To inspire for a Malawi where all people have access to renewable energy technologies that enable them to lead dignified lives, while protecting the environment for current and future generations.'
-                ],
-                'mission' => [
-                    'title' => 'Our Mission',
-                    'content' => 'To become the number one leading renewable energy company in Malawi and rank among the top 10 renewable energy companies in sub-Saharan Africa. We aim to distribute quality renewable energy technologies, targeting both rural and urban areas to eradicate energy poverty.'
-                ],
-                'keys' => [
-                    'title' => 'Our Keys for Development',
-                    'items' => [
-                        'Desire for Excellence',
-                        'Trust and Confidence Build-up',
-                        'Innovation',
-                        'Transparency',
-                        'Teamwork'
-                    ]
-                ],
-                'overview' => [
-                    'title' => 'Company Overview',
-                    'content' => 'Inclusive Green Energy Africa (IGEA), founded in 2022, is a renewable energy enterprise dedicated to providing affordable and sustainable energy solutions to underserved communities across sub-Saharan Africa. The company specializes in clean energy technologies such as solar home systems, biogas solutions, and solar water pumps, targeting households, schools, businesses, and agricultural communities.'
-                ]
-            ]
-        ];
+        // Get active team members
+        $teamMembers = TeamMember::where('is_active', true)
+            ->orderBy('order')
+            ->get();
 
-        return view('pages.about', compact('page', 'defaultContent'));
-    }
-
-    /**
-     * Display products page
-     */
-    public function products()
-    {
-        $page = Page::where('slug', 'products')->first();
-        
-        $defaultContent = [
-            'hero' => [
-                'title' => 'Empowering Africa with Sustainable Energy',
-                'subtitle' => 'Discover our innovative and affordable solar, and irrigation solutions designed for homes, farms, and communities.'
-            ],
-            'sections' => [
-                'solar_home' => [
-                    'title' => 'Solar Home Systems',
-                    'content' => 'IGEA offers high-quality, affordable home solar systems providing reliable electricity to off-grid communities. Systems include panels, batteries, LED lighting, and USB charging ports, available in various capacities. Durable and easy to install, they reduce reliance on harmful fuels like kerosene, improving health and productivity. Flexible payment plans, including Pay-As-You-Go, ensure accessibility.'
-                ],
-                'solar_water' => [
-                    'title' => 'Solar Water Pumps',
-                    'content' => 'Driving agricultural transformation with solar water pumps for irrigation, enabling year-round farming. Our PAYG model provides affordable access, allowing farmers in groups of five to cultivate crops multiple times annually. Training in good farming practices maximizes yields. This sustainable model empowers farmers, enhances income, reduces dependency on rain, and promotes climate resilience.'
-                ]
-            ]
-        ];
-
-        return view('pages.products', compact('page', 'defaultContent'));
+        return view('pages.about', compact('page', 'teamMembers'));
     }
 
     /**
@@ -87,17 +55,13 @@ class PageController extends Controller
      */
     public function team()
     {
-        $page = Page::where('slug', 'team')->first();
-        $teamMembers = TeamMember::orderBy('order')->get();
+        $page = Page::where('slug', 'team')->firstOrFail();
         
-        $defaultContent = [
-            'hero' => [
-                'title' => 'Meet Our Passionate Team',
-                'subtitle' => 'The dedicated individuals driving sustainable energy solutions and community empowerment across Africa.'
-            ]
-        ];
+        $teamMembers = TeamMember::where('is_active', true)
+            ->orderBy('order')
+            ->get();
 
-        return view('pages.team', compact('page', 'teamMembers', 'defaultContent'));
+        return view('pages.team', compact('page', 'teamMembers'));
     }
 
     /**
@@ -105,33 +69,91 @@ class PageController extends Controller
      */
     public function gallery()
     {
-        $page = Page::where('slug', 'gallery')->first();
-        $gallery = Gallery::where('is_active', true)->orderBy('order')->get();
+        $page = Page::where('slug', 'gallery')->firstOrFail();
         
-        $defaultContent = [
-            'hero' => [
-                'title' => 'Our Gallery',
-                'subtitle' => 'Explore our projects and see the impact we\'re making across Africa.'
-            ]
-        ];
+        $galleryItems = Gallery::where('is_active', true)
+            ->orderBy('order')
+            ->get();
 
-        return view('pages.gallery', compact('page', 'gallery', 'defaultContent'));
+        return view('pages.gallery', compact('page', 'galleryItems'));
+    }
+
+    /**
+     * Display contact page
+     */
+    public function contact()
+    {
+        $page = Page::where('slug', 'contact')->firstOrFail();
+        return view('pages.contact', compact('page'));
+    }
+
+    /**
+     * Display products page
+     */
+    public function products()
+    {
+        $page = Page::where('slug', 'products')->firstOrFail();
+        $products = Product::with('images')
+            ->where('is_active', true)
+            ->orderBy('order')
+            ->get();
+
+        return view('pages.products', compact('page', 'products'));
+    }
+
+    /**
+     * Display individual product detail page
+     */
+    public function showProduct($slug)
+    {
+        $product = Product::with('images')
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        // Get other active products for related products section
+        $relatedProducts = Product::with('images')
+            ->where('is_active', true)
+            ->where('id', '!=', $product->id)
+            ->orderBy('order')
+            ->take(3)
+            ->get();
+
+        return view('pages.product-detail', compact('product', 'relatedProducts'));
     }
 
     /**
      * Handle contact form submission
      */
-    public function contact(Request $request)
+    public function submitContact(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'nullable|string|max:20',
+            'email' => 'required|email|max:255',
             'subject' => 'required|string|max:255',
-            'message' => 'required|string'
+            'message' => 'required|string',
         ]);
 
-        // Here you can save to database or send email
-        return redirect()->back()->with('success', 'Thank you for your message! We will get back to you soon.');
+        // Here you can handle the contact form submission
+        // For now, we'll just return a success message
+        
+        return redirect()->route('contact')->with('success', 'Thank you for your message! We will get back to you soon.');
+    }
+
+    /**
+     * Fallback method for any other page requests
+     */
+    public function show($slug)
+    {
+        $page = Page::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        
+        // Check if there's a specific view for this page
+        $viewName = 'pages.' . $slug;
+        if (view()->exists($viewName)) {
+            return view($viewName, compact('page'));
+        }
+        
+        // Fallback to generic page view
+        return view('pages.generic', compact('page'));
     }
 }

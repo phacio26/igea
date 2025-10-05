@@ -8,10 +8,10 @@
     <title>@yield('title', 'Admin Dashboard - Inclusive Green Energy Africa')</title>
     
     <!-- Meta Description -->
-    <meta name="description" content="Admin dashboard for Inclusive Green Energy Africa - Manage website content, team members, gallery, and pages.">
+    <meta name="description" content="Admin dashboard for Inclusive Green Energy Africa - Manage website content, team members, gallery, products, and pages.">
     
     <!-- Keywords -->
-    <meta name="keywords" content="admin dashboard, website management, content management, team management, gallery management">
+    <meta name="keywords" content="admin dashboard, website management, content management, team management, gallery management, product management">
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="@yield('title', 'Admin Dashboard - Inclusive Green Energy Africa')">
@@ -52,13 +52,17 @@
             padding: 10px 15px;
             margin: 5px 0;
             border-radius: 5px;
+            transition: all 0.3s ease;
         }
         .sidebar .nav-link:hover {
-            background-color: rgba(255,255,255,0.1);
+            background-color: rgba(255,255,255,0.15);
+            transform: translateX(5px);
         }
         .sidebar .nav-link.active {
             background-color: white;
             color: #28a745;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .navbar-admin {
             background-color: #f8f9fa;
@@ -66,10 +70,13 @@
             position: sticky;
             top: 0;
             z-index: 999;
+            padding: 1rem 0;
         }
         .main-content {
             margin-left: 250px;
             width: calc(100% - 250px);
+            min-height: 100vh;
+            background-color: #f8f9fa;
         }
         .sidebar-content {
             padding: 20px 15px;
@@ -102,6 +109,12 @@
             margin-top: 2px;
         }
         
+        /* Navigation styling */
+        .nav-divider {
+            border-color: rgba(255,255,255,0.2);
+            margin: 1rem 0;
+        }
+        
         /* Mobile responsiveness */
         @media (max-width: 768px) {
             .sidebar {
@@ -124,6 +137,10 @@
             }
             .brand-text {
                 font-size: 1rem;
+            }
+            .sidebar .nav-link {
+                padding: 12px 15px;
+                margin: 2px 0;
             }
         }
         
@@ -155,24 +172,78 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             border: none;
             margin-bottom: 1.5rem;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
         
         /* Button styling */
         .btn {
             border-radius: 6px;
             font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            transform: translateY(-1px);
         }
         
         /* Form styling */
         .form-control {
             border-radius: 6px;
             border: 1px solid #dee2e6;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
         }
         
         /* Table styling */
         .table {
             border-radius: 8px;
             overflow: hidden;
+        }
+        
+        .table th {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        
+        /* Main content area styling */
+        main {
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Navbar text styling */
+        .navbar-text {
+            font-size: 0.9rem;
+        }
+        
+        /* Active state improvements */
+        .sidebar .nav-link.active:hover {
+            background-color: white;
+            color: #28a745;
+            transform: none;
+        }
+        
+        /* Icon styling */
+        .bi {
+            width: 1.2em;
+            text-align: center;
         }
     </style>
 </head>
@@ -206,6 +277,10 @@
                            href="{{ route('admin.pages.index') }}">
                             <i class="bi bi-file-text me-2"></i>Pages
                         </a>
+                        <a class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}" 
+                           href="{{ route('admin.products.index') }}">
+                            <i class="bi bi-box me-2"></i>Products
+                        </a>
                         <a class="nav-link {{ request()->routeIs('admin.team.*') ? 'active' : '' }}" 
                            href="{{ route('admin.team.index') }}">
                             <i class="bi bi-people me-2"></i>Team
@@ -214,15 +289,21 @@
                            href="{{ route('admin.gallery.index') }}">
                             <i class="bi bi-images me-2"></i>Gallery
                         </a>
-                        <hr>
+                        
+                        <hr class="nav-divider">
+                        
                         <!-- View Site Link -->
                         <a class="nav-link" href="{{ url('/') }}" target="_blank" rel="noopener">
                             <i class="bi bi-eye me-2"></i>View Site
                         </a>
-                        <a class="nav-link" href="{{ route('logout') }}" 
+                        
+                        <!-- Fixed Logout Link -->
+                        <a class="nav-link text-warning" href="#" 
                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="bi bi-box-arrow-right me-2"></i>Logout
                         </a>
+                        
+                        <!-- Logout Form -->
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                             @csrf
                         </form>
@@ -272,8 +353,8 @@
                     @if($errors->any())
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            Please fix the following errors:
-                            <ul class="mb-0 mt-1">
+                            <strong>Please fix the following errors:</strong>
+                            <ul class="mb-0 mt-2">
                                 @foreach($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -321,7 +402,24 @@
                     link.classList.add('active');
                 }
             });
+            
+            // Add loading state to buttons
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    const submitBtn = this.querySelector('button[type="submit"], input[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Processing...';
+                    }
+                });
+            });
         });
+        
+        // Function to confirm deletions
+        function confirmDelete(message = 'Are you sure you want to delete this item?') {
+            return confirm(message);
+        }
     </script>
     @yield('scripts')
 </body>

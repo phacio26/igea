@@ -7,14 +7,14 @@
     <!-- About Us Hero Section -->
     <section class="about-hero-section">
         <div class="container hero-content">
-            <h1>About Inclusive Green Energy Africa</h1>
-            <p>Learn about our mission, vision, and commitment to sustainable energy solutions for all.</p>
+            <h1 data-aos="fade-down">About Inclusive Green Energy Africa</h1>
+            <p data-aos="fade-up" data-aos-delay="200">Learn about our mission, vision, and commitment to sustainable energy solutions for all.</p>
         </div>
     </section>
 
     <div class="container">
-        <!-- About Us Section -->
-        <section class="about-card animated-element" id="about-igea">
+        <!-- Who We Are Section -->
+        <section class="about-card" id="about-igea" data-aos="fade-up">
             <div class="card-body">
                 <h2 class="card-title text-green">Who We Are</h2>
                 <p class="card-text">
@@ -26,24 +26,28 @@
             </div>
         </section>
 
-        <!-- Our Vision Section -->
-        <section class="about-card animated-element" id="vision">
+        <!-- Vision Section -->
+        <section class="about-card" id="vision" data-aos="fade-right">
             <div class="card-body">
                 <h2 class="card-title text-green">Our Vision</h2>
-                <p class="card-text">To inspire for a Malawi where all people have access to renewable energy technologies that enable them to lead dignified lives, while protecting the environment for current and future generations.</p>
+                <p class="card-text">
+                    To inspire for a Malawi where all people have access to renewable energy technologies that enable them to lead dignified lives, while protecting the environment for current and future generations.
+                </p>
             </div>
         </section>
 
-        <!-- Our Mission Section -->
-        <section class="about-card animated-element" id="mission">
+        <!-- Mission Section -->
+        <section class="about-card" id="mission" data-aos="fade-left">
             <div class="card-body">
                 <h2 class="card-title text-green">Our Mission</h2>
-                <p class="card-text">To become the number one leading renewable energy company in Malawi and rank among the top 10 renewable energy companies in sub-Saharan Africa. We aim to distribute quality renewable energy technologies, targeting both rural and urban areas to eradicate energy poverty.</p>
+                <p class="card-text">
+                    To become the number one leading renewable energy company in Malawi and rank among the top 10 renewable energy companies in sub-Saharan Africa. We aim to distribute quality renewable energy technologies, targeting both rural and urban areas to eradicate energy poverty.
+                </p>
             </div>
         </section>
 
-        <!-- Our Keys for Development Section -->
-        <section class="about-card animated-element" id="keys-development">
+        <!-- Keys for Development -->
+        <section class="about-card" id="keys-development" data-aos="zoom-in">
             <div class="card-body">
                 <h2 class="card-title text-green">Our Keys for Development</h2>
                 <ul class="keys-list">
@@ -56,43 +60,48 @@
             </div>
         </section>
 
-        <!-- Overview of IGEA Section -->
-        <section class="about-card animated-element" id="overview">
+        <!-- Company Overview -->
+        <section class="about-card" id="overview" data-aos="fade-up">
             <div class="card-body">
                 <h2 class="card-title text-green">Company Overview</h2>
-                <p class="card-text">Inclusive Green Energy Africa (IGEA), founded in 2022, is a renewable energy enterprise dedicated to providing affordable and sustainable energy solutions to underserved communities across sub-Saharan Africa. The company specializes in clean energy technologies such as <strong>solar home systems, biogas solutions, and solar water pumps</strong>, targeting households, schools, businesses, and agricultural communities.</p>
-                <p class="card-text">IGEA's goal is to <strong>bridge the energy gap</strong> by ensuring that both rural and urban residents have access to <strong>clean, reliable, and cost-effective</strong> energy alternatives for lighting, cooking, and productive use. The enterprise began with the production and distribution of <strong>Chitetezo Mbaula</strong>, an improved cookstove, before expanding into broader renewable energy solutions.</p>
+                <p class="card-text">
+                    Inclusive Green Energy Africa (IGEA), founded in 2022, is a renewable energy enterprise dedicated to providing affordable and sustainable energy solutions to underserved communities across sub-Saharan Africa. The company specializes in clean energy technologies such as <strong>solar home systems, biogas solutions, and solar water pumps</strong>, targeting households, schools, businesses, and agricultural communities.
+                </p>
+                <p class="card-text">
+                    IGEA's goal is to <strong>bridge the energy gap</strong> by ensuring that both rural and urban residents have access to <strong>clean, reliable, and cost-effective</strong> energy alternatives for lighting, cooking, and productive use. The enterprise began with the production and distribution of <strong>Chitetezo Mbaula</strong>, an improved cookstove, before expanding into broader renewable energy solutions.
+                </p>
             </div>
         </section>
     </div>
 </main>
 
-<!-- Contact Us Section -->
-<section class="contact-section animated-element" id="contact-us">
+<!-- Contact Section -->
+<section class="contact-section" id="contact-us" data-aos="fade-up">
     <div class="container">
         <h2 class="text-center">Contact Us</h2>
-        <div class="contact-info-details col-lg-8 mx-auto">
+        <div class="contact-info-details col-lg-8 mx-auto text-center">
             <p>Get in touch with us for inquiries:</p>
-            <div>
-                 <p><i class="bi bi-telephone"></i> <strong>Phone:</strong> <a href="tel:+265988415852">+265 (0) 988 415 852</a></p>
-                 <p><i class="bi bi-envelope"></i> <strong>Email:</strong> <a href="mailto:inclusivegreenenergyafrica@gmail.com">inclusivegreenenergyafrica@gmail.com</a></p>
-                 <p><i class="bi bi-geo-alt"></i> <strong>Address:</strong> Lilongwe, Malawi</p>
+            <div class="contact-links">
+                <p><i class="bi bi-telephone"></i> <strong>Phone:</strong> <a href="tel:+265988415852">+265 (0) 988 415 852</a></p>
+                <p><i class="bi bi-envelope"></i> <strong>Email:</strong> <a href="mailto:inclusivegreenenergyafrica@gmail.com">inclusivegreenenergyafrica@gmail.com</a></p>
+                <p><i class="bi bi-geo-alt"></i> <strong>Address:</strong> Lilongwe, Malawi</p>
             </div>
             <h3 class="mt-4 h5 fw-semibold">Office Hours</h3>
             <p>Monday to Friday: 8:00 am - 5:00 pm</p>
             <p>Saturday: 9:00 am - 12:00 noon</p>
             <p>Closed on Sundays</p>
-            <div class="social-icons">
+
+            <div class="social-icons mt-4">
                 <h4 class="h5 fw-semibold mb-3">Follow us online</h4>
-                <div class="d-flex justify-content-center gap-3">
-                    <a href="https://www.facebook.com/profile.php?id=100085898573695" target="_blank" rel="noopener noreferrer" class="text-decoration-none" aria-label="Facebook">
-                        <i class="bi bi-facebook fs-3"></i>
+                <div class="d-flex justify-content-center gap-4">
+                    <a href="https://www.facebook.com/profile.php?id=100085898573695" target="_blank" rel="noopener noreferrer">
+                        <i class="bi bi-facebook fs-2"></i>
                     </a>
-                    <a href="https://www.linkedin.com/company/inclusive-green-energy-africa/" target="_blank" rel="noopener noreferrer" class="text-decoration-none" aria-label="LinkedIn">
-                        <i class="bi bi-linkedin fs-3"></i>
+                    <a href="https://www.linkedin.com/company/inclusive-green-energy-africa/" target="_blank" rel="noopener noreferrer">
+                        <i class="bi bi-linkedin fs-2"></i>
                     </a>
-                    <a href="https://www.instagram.com/igea23?igsh=bG5jNmJoZ3h2cWhl" target="_blank" rel="noopener noreferrer" class="text-decoration-none" aria-label="Instagram">
-                        <i class="bi bi-instagram fs-3"></i>
+                    <a href="https://www.instagram.com/igea23?igsh=bG5jNmJoZ3h2cWhl" target="_blank" rel="noopener noreferrer">
+                        <i class="bi bi-instagram fs-2"></i>
                     </a>
                 </div>
             </div>
@@ -101,28 +110,30 @@
 </section>
 
 <style>
-/* About Hero Section */
+/* ===== GENERAL ===== */
+body {
+    scroll-behavior: smooth;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ===== HERO SECTION ===== */
 .about-hero-section {
     position: relative;
-    padding: 80px 0;
-    margin-bottom: 50px;
-    background: url('{{ asset("images/MANGANI/about-background.jpg") }}') no-repeat center center;
-    background-size: cover;
+    padding: 100px 0;
+    background: url('{{ asset("images/MANGANI/about-background.jpg") }}') center/cover no-repeat;
     color: white;
     text-align: center;
-    border-radius: 0 0 15px 15px;
     overflow: hidden;
+    border-radius: 0 0 20px 20px;
 }
 
 .about-hero-section::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(40, 167, 69, 0.7);
+    inset: 0;
+    background: rgba(0, 100, 0, 0.6);
     z-index: 1;
+    backdrop-filter: blur(3px);
 }
 
 .hero-content {
@@ -132,39 +143,126 @@
 
 .hero-content h1 {
     font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 15px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .hero-content p {
     font-size: 1.2rem;
     max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    opacity: 0.9;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    margin: 15px auto 0;
+    opacity: 0.95;
+}
+
+/* ===== ABOUT CARDS ===== */
+.about-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 40px;
+    margin-bottom: 40px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+}
+
+.about-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(0, 128, 0, 0.15);
+}
+
+.card-title {
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+.text-green {
+    color: #28a745;
+}
+
+.card-text {
+    color: #555;
+    line-height: 1.7;
+}
+
+/* ===== KEYS LIST ===== */
+.keys-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.keys-list li {
+    background: #e6f5ea;
+    color: #2e7d32;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.keys-list li:hover {
+    background: #28a745;
+    color: #fff;
+    transform: translateX(5px);
+}
+
+/* ===== CONTACT SECTION ===== */
+.contact-section {
+    background: linear-gradient(to right, #f0fff4, #e8f5e9);
+    padding: 60px 0;
+    border-top: 2px solid #28a745;
+}
+
+.contact-info-details a {
+    color: #28a745;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.contact-info-details a:hover {
+    text-decoration: underline;
+}
+
+.social-icons a {
+    color: #28a745;
+    transition: transform 0.3s, color 0.3s;
+}
+
+.social-icons a:hover {
+    transform: scale(1.2);
+    color: #218838;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.2rem;
+    }
+
+    .about-card {
+        padding: 25px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+    }
 }
 </style>
 @endsection
 
 @section('scripts')
+<!-- Include AOS (Animate On Scroll) Library -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Intersection Observer for Animations
-        const elementsToAnimate = document.querySelectorAll('.animated-element');
-        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
-        const observerCallback = (entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) { 
-                    entry.target.classList.add('visible'); 
-                } else { 
-                    entry.target.classList.remove('visible'); 
-                }
-            });
-        };
-        const animationObserver = new IntersectionObserver(observerCallback, observerOptions);
-        elementsToAnimate.forEach(el => { animationObserver.observe(el); });
+    document.addEventListener('DOMContentLoaded', function () {
+        AOS.init({
+            duration: 1000,   // Animation duration in ms
+            once: false,      // Animations repeat every time scrolling
+            offset: 100,      // Trigger before 100px of element
+            mirror: true      // Animate again on scroll up
+        });
     });
 </script>
 @endsection

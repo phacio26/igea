@@ -9,7 +9,14 @@
 
 <div class="card">
     <div class="card-body">
-        @if($pages->count() > 0)
+        @php
+            // Filter out About Us and Contact Us pages
+            $filteredPages = $pages->filter(function($page) {
+                return !in_array($page->slug, ['about', 'contact']);
+            });
+        @endphp
+
+        @if($filteredPages->count() > 0)
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
@@ -22,7 +29,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($pages as $page)
+                        @foreach($filteredPages as $page)
                             <tr>
                                 <td>{{ $page->title }}</td>
                                 <td><code>{{ $page->slug }}</code></td>
@@ -31,12 +38,45 @@
                                         {{ $page->is_active ? 'Active' : 'Inactive' }}
                                     </span>
                                 </td>
-                                <td>{{ $page->updated_at->format('M j, Y g:i A') }}</td>
                                 <td>
-                                    <a href="{{ route('admin.pages.edit', $page->slug) }}" 
-                                       class="btn btn-sm btn-primary">
-                                        <i class="bi bi-pencil"></i> Edit
-                                    </a>
+                                    @php
+                                        // Convert to Malawian time (CAT - Central Africa Time, UTC+2)
+                                        $malawianTime = $page->updated_at->setTimezone('Africa/Blantyre');
+                                        echo $malawianTime->format('M j, Y g:i A');
+                                    @endphp
+                                    <br>
+                                  
+                                </td>
+                                <td>
+                                    @switch($page->slug)
+                                        @case('gallery')
+                                            <a href="{{ route('admin.gallery.index') }}" 
+                                               class="btn btn-sm btn-primary">
+                                                <i class="bi bi-images me-1"></i> Manage Gallery
+                                            </a>
+                                            @break
+
+                                        @case('team')
+                                            <a href="{{ route('admin.team.index') }}" 
+                                               class="btn btn-sm btn-primary">
+                                                <i class="bi bi-people me-1"></i> Manage Team
+                                            </a>
+                                            @break
+
+                                        @case('products')
+                                            <a href="{{ route('admin.products.index') }}" 
+                                               class="btn btn-sm btn-primary">
+                                                <i class="bi bi-box-seam me-1"></i> Manage Products
+                                            </a>
+                                            @break
+
+                                        @default
+                                            {{-- Home page goes to regular page editor --}}
+                                            <a href="{{ route('admin.pages.edit', $page->slug) }}" 
+                                               class="btn btn-sm btn-primary">
+                                                <i class="bi bi-pencil me-1"></i> Edit Content
+                                            </a>
+                                    @endswitch
                                 </td>
                             </tr>
                         @endforeach
@@ -54,9 +94,12 @@
 </div>
 
 <div class="mt-4">
-    <div class="alert alert-info">
-        <h6><i class="bi bi-info-circle me-2"></i>About Pages</h6>
-        <p class="mb-0">Pages contain the main content of your website. You can edit the content of each page using the edit button.</p>
-    </div>
+    
 </div>
+
+<style>
+.text-muted {
+    font-size: 0.75rem;
+}
+</style>
 @endsection

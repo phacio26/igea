@@ -39,14 +39,83 @@
     <div class="col-md-3 mb-4">
         <div class="card text-white bg-info">
             <div class="card-body text-center">
-                <h2>{{ $activeGalleryItems }}</h2>
-                <p class="mb-0">Active Gallery</p>
+                <h2>{{ $productCount }}</h2>
+                <p class="mb-0">Products</p>
             </div>
         </div>
     </div>
 </div>
 
 <div class="row">
+    <!-- Current Products -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Current Products</h5>
+                <a href="{{ route('admin.products.create') }}" class="btn btn-success btn-sm">
+                    <i class="bi bi-plus-circle"></i> Add New
+                </a>
+            </div>
+            <div class="card-body">
+                @if($products->count() > 0)
+                    <div class="row">
+                        @foreach($products->take(4) as $product)
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <!-- FIXED: Product Image Display -->
+                                <div class="product-dash-image-container me-3">
+                                    @php
+                                        // Get the first gallery image if it exists
+                                        $mainImage = $product->images->first();
+                                        if ($mainImage && !empty($mainImage->image_path)) {
+                                            $filename = basename($mainImage->image_path);
+                                            $imageSrc = asset('storage/products/' . $filename);
+                                        } else {
+                                            $imageSrc = asset('images/default-product.png');
+                                        }
+                                    @endphp
+                                    <img src="{{ $imageSrc }}" 
+                                         alt="{{ $product->name }}" 
+                                         class="product-dash-img"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/default-product.png') }}';">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ Str::limit($product->name, 20) }}</h6>
+                                    <small class="text-muted">{{ $product->images->count() }} images</small>
+                                    <div class="mt-1">
+                                        <a href="{{ route('admin.products.edit', $product->id) }}" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        @if(!$product->is_active)
+                                            <span class="badge bg-secondary ms-1">Inactive</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    @if($products->count() > 4)
+                        <div class="text-center mt-3">
+                            <a href="{{ route('admin.products.index') }}" class="btn btn-outline-primary btn-sm">
+                                View All {{ $products->count() }} Products
+                            </a>
+                        </div>
+                    @endif
+                @else
+                    <div class="text-center py-4">
+                        <i class="bi bi-box display-4 text-muted"></i>
+                        <p class="text-muted mt-2">No products yet</p>
+                        <a href="{{ route('admin.products.create') }}" class="btn btn-success">
+                            <i class="bi bi-plus-circle"></i> Add First Product
+                        </a>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     <!-- Current Team Members -->
     <div class="col-lg-6 mb-4">
         <div class="card">
@@ -59,18 +128,25 @@
             <div class="card-body">
                 @if($teamMembers->count() > 0)
                     <div class="row">
-                        @foreach($teamMembers as $member)
+                        @foreach($teamMembers->take(4) as $member)
                         <div class="col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <!-- Updated Image Display -->
+                                <!-- FIXED: Team Member Image Display -->
                                 <div class="team-dash-image-container me-3">
-                                    <img src="{{ $member->image_url }}" 
+                                    @php
+                                        if (!empty($member->image_path)) {
+                                            $imageSrc = route('team.image', ['filename' => $member->image_path]);
+                                        } else {
+                                            $imageSrc = asset('images/default-avatar.png');
+                                        }
+                                    @endphp
+                                    <img src="{{ $imageSrc }}" 
                                          alt="{{ $member->name }}" 
                                          class="team-dash-img"
                                          onerror="this.onerror=null; this.src='{{ asset('images/default-avatar.png') }}';">
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h6 class="mb-1">{{ $member->name }}</h6>
+                                    <h6 class="mb-1">{{ Str::limit($member->name, 20) }}</h6>
                                     <small class="text-muted">{{ $member->position }}</small>
                                     <div class="mt-1">
                                         <a href="{{ route('admin.team.edit', $member->id) }}" 
@@ -83,6 +159,13 @@
                         </div>
                         @endforeach
                     </div>
+                    @if($teamMembers->count() > 4)
+                        <div class="text-center mt-3">
+                            <a href="{{ route('admin.team.index') }}" class="btn btn-outline-primary btn-sm">
+                                View All {{ $teamMembers->count() }} Members
+                            </a>
+                        </div>
+                    @endif
                 @else
                     <div class="text-center py-4">
                         <i class="bi bi-people display-4 text-muted"></i>
@@ -95,7 +178,9 @@
             </div>
         </div>
     </div>
+</div>
 
+<div class="row">
     <!-- Current Gallery Images -->
     <div class="col-lg-6 mb-4">
         <div class="card">
@@ -111,9 +196,16 @@
                         @foreach($gallery->take(6) as $item)
                         <div class="col-4 mb-3">
                             <div class="gallery-dash-card position-relative">
-                                <!-- Updated Image Display -->
+                                <!-- FIXED: Gallery Image Display -->
                                 <div class="gallery-dash-image-container">
-                                    <img src="{{ $item->image_url }}" 
+                                    @php
+                                        if (!empty($item->image_path)) {
+                                            $imageSrc = route('gallery.image', ['filename' => $item->image_path]);
+                                        } else {
+                                            $imageSrc = asset('images/default-image.png');
+                                        }
+                                    @endphp
+                                    <img src="{{ $imageSrc }}" 
                                          alt="{{ $item->title }}" 
                                          class="gallery-dash-img"
                                          onerror="this.onerror=null; this.src='{{ asset('images/default-image.png') }}';">
@@ -155,11 +247,9 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- Current Pages -->
-<div class="row mt-4">
-    <div class="col-12">
+    <!-- Current Pages -->
+    <div class="col-lg-6 mb-4">
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title mb-0">Website Pages</h5>
@@ -167,25 +257,45 @@
             <div class="card-body">
                 <div class="row">
                     @foreach($pages as $page)
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h6 class="card-title">{{ $page->name }}</h6>
-                                <p class="card-text text-muted small">
-                                    {{ $page->meta_description ?: 'No description set' }}
-                                </p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge {{ $page->is_active ? 'bg-success' : 'bg-secondary' }}">
-                                        {{ $page->is_active ? 'Active' : 'Inactive' }}
-                                    </span>
-                                    <a href="{{ route('admin.pages.edit', $page->slug) }}" 
-                                       class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-pencil"></i> Edit
-                                    </a>
+                        @if(!in_array($page->slug, ['about', 'contact']))
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ $page->name }}</h6>
+                                    <p class="card-text text-muted small">
+                                        {{ $page->meta_description ?: 'No description set' }}
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge {{ $page->is_active ? 'bg-success' : 'bg-secondary' }}">
+                                            {{ $page->is_active ? 'Active' : 'Inactive' }}
+                                        </span>
+                                        {{-- FIXED: Redirect specific pages to their management sections --}}
+                                        @if($page->slug === 'team')
+                                            <a href="{{ route('admin.team.index') }}" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-people"></i> Manage Team
+                                            </a>
+                                        @elseif($page->slug === 'gallery')
+                                            <a href="{{ route('admin.gallery.index') }}" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-images"></i> Manage Gallery
+                                            </a>
+                                        @elseif($page->slug === 'products')
+                                            <a href="{{ route('admin.products.index') }}" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-box"></i> Manage Products
+                                            </a>
+                                        @else
+                                            <a href="{{ route('admin.pages.edit', $page->slug) }}" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </a>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        @endif
                     @endforeach
                 </div>
             </div>
@@ -207,7 +317,11 @@
                             <i class="bi bi-house me-2"></i>Edit Home Page
                         </a>
                     </div>
-                     
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ route('admin.products.create') }}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-box me-2"></i>Add Product
+                        </a>
+                    </div>
                     <div class="col-md-3 mb-3">
                         <a href="{{ route('admin.team.create') }}" class="btn btn-outline-primary w-100">
                             <i class="bi bi-person-plus me-2"></i>Add Team Member
@@ -240,7 +354,7 @@
                     Changes made here will be reflected immediately on the live website.
                 </div>
                 <div class="row text-center">
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-2 mb-3">
                         <a href="{{ route('home') }}" target="_blank" class="text-decoration-none">
                             <div class="card">
                                 <div class="card-body">
@@ -250,17 +364,17 @@
                             </div>
                         </a>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{{ route('about') }}" target="_blank" class="text-decoration-none">
+                    <div class="col-md-2 mb-3">
+                        <a href="{{ route('products') }}" target="_blank" class="text-decoration-none">
                             <div class="card">
                                 <div class="card-body">
-                                    <i class="bi bi-info-circle display-6 text-primary"></i>
-                                    <h6 class="mt-2">About Page</h6>
+                                    <i class="bi bi-box display-6 text-primary"></i>
+                                    <h6 class="mt-2">Products</h6>
                                 </div>
                             </div>
                         </a>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-2 mb-3">
                         <a href="{{ route('team') }}" target="_blank" class="text-decoration-none">
                             <div class="card">
                                 <div class="card-body">
@@ -270,7 +384,7 @@
                             </div>
                         </a>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-2 mb-3">
                         <a href="{{ route('gallery') }}" target="_blank" class="text-decoration-none">
                             <div class="card">
                                 <div class="card-body">
@@ -301,6 +415,26 @@
 }
 
 .team-dash-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Product Dashboard Styles */
+.product-dash-image-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.product-dash-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -374,9 +508,20 @@
     line-height: 1.2;
 }
 
+/* Card hover effects */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
 /* Mobile Responsive Styles */
 @media (max-width: 576px) {
-    .team-dash-image-container {
+    .team-dash-image-container,
+    .product-dash-image-container {
         width: 50px;
         height: 50px;
     }
@@ -400,6 +545,14 @@
     .gallery-dash-content {
         transform: translateY(0);
     }
+    
+    .quick-actions .col-md-3 {
+        margin-bottom: 10px;
+    }
+    
+    .live-preview .col-md-2 {
+        margin-bottom: 15px;
+    }
 }
 
 @media (min-width: 577px) and (max-width: 768px) {
@@ -409,6 +562,12 @@
     
     .gallery-dash-img {
         object-fit: cover;
+    }
+    
+    .team-dash-image-container,
+    .product-dash-image-container {
+        width: 55px;
+        height: 55px;
     }
 }
 
@@ -422,6 +581,28 @@
     .gallery-dash-image-container {
         height: 110px;
     }
+}
+
+/* Badge styling */
+.badge {
+    font-size: 0.7rem;
+}
+
+/* Button styling */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* Card header styling */
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.card-title {
+    color: #495057;
+    font-weight: 600;
 }
 </style>
 @endsection

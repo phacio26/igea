@@ -6,8 +6,13 @@
 <!-- Hero Section with Slideshow -->
 <section class="hero-section">
     <div class="slideshow-container">
-        @if(isset($content['hero_images']) && count($content['hero_images']) > 0)
-            @foreach($content['hero_images'] as $image)
+        @php
+            // Get hero images from page content
+            $heroImages = $page->hero_images ?? [];
+        @endphp
+        
+        @if(count($heroImages) > 0)
+            @foreach($heroImages as $image)
                 <img src="{{ asset($image) }}" alt="Inclusive Green Energy Africa">
             @endforeach
         @else
@@ -60,7 +65,6 @@
         </div>
     </section>
 
-    <!-- Rest of your home page content remains the same -->
     <!-- Why Go For Our Products and Services Section -->
     <section id="why-go-for-our-products" class="content-section">
          <div class="container">
@@ -160,8 +164,8 @@
                 <div class="container-fluid">
                     <div class="row g-3">
                         <!-- Dynamic Gallery Images from Database -->
-                        @if(isset($gallery) && $gallery->count() > 0)
-                            @foreach($gallery as $item)
+                        @if($galleryItems->count() > 0)
+                            @foreach($galleryItems as $item)
                             <div class="col-lg-4 col-md-6">
                                 <img src="{{ $item->image_url }}" 
                                      alt="{{ $item->title }}" 
@@ -249,10 +253,11 @@
 
         // Counter Animation Function
         function startCounterAnimation() {
-            // Get dynamic numbers from content or use defaults
-            const productsCount = {{ $content['stats']['products_sold'] ?? 1286 }};
-            const peopleCount = {{ $content['stats']['people_reached'] ?? 5000 }};
-            const ecoPercentage = {{ $content['stats']['eco_friendly'] ?? 100 }};
+            // Get dynamic numbers from page content or use defaults
+            const stats = @json($page->stats ?? []);
+            const productsCount = stats.products_sold || 1286;
+            const peopleCount = stats.people_reached || 5000;
+            const ecoPercentage = stats.eco_friendly || 100;
 
             // Function to animate counting
             function animateCounter(elementId, targetNumber, suffix = '', duration = 2000) {

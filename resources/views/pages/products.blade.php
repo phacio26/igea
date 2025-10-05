@@ -4,100 +4,113 @@
 
 @section('content')
 <main>
-    <!-- Product Hero Section -->
+    <!-- Hero Section -->
     <section class="product-hero-section">
         <div class="container hero-content">
-            <h1>Empowering Africa with Sustainable Energy</h1>
-            <p>Discover our innovative and affordable solar, and irrigation solutions designed for homes, farms, and communities.</p>
+            <h1 data-aos="fade-down">Empowering Africa with Sustainable Energy</h1>
+            <p data-aos="fade-up" data-aos-delay="200">
+                Discover our innovative and affordable solar and irrigation solutions designed for homes, farms, and communities.
+            </p>
         </div>
     </section>
 
-    <div class="container">
-        <!-- Solar Home Systems Section -->
-        <section class="product-section" id="solar-home-systems">
-             <div class="container">
-                <div class="row">
+    <!-- Products Section -->
+    <section class="py-5 page-bg">
+        <div class="container">
+            @foreach($products as $product)
+            <section class="product-section mb-5" id="{{ Str::slug($product->name) }}" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                <div class="row mb-4">
                     <div class="col-12">
-                        <h2 class="text-green">Solar Home Systems</h2>
-                        <p>IGEA offers high-quality, affordable home solar systems providing reliable electricity to off-grid communities. Systems include panels, batteries, LED lighting, and USB charging ports, available in various capacities. Durable and easy to install, they reduce reliance on harmful fuels like kerosene, improving health and productivity. Flexible payment plans, including Pay-As-You-Go, ensure accessibility.</p>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <!-- Image 1 -->
-                    <div class="col-md-6 mb-4">
-                        <div class="product-image-container">
-                            <img src="{{ asset('images/MANGANI/20240324_155522.jpg') }}" alt="Customer smiling while using a Solar Home System" class="product-img">
-                        </div>
-                        <p class="text-center image-caption mt-3">Solar panels in use</p>
-                    </div>
-                    <!-- Image 2 -->
-                    <div class="col-md-6 mb-4">
-                        <div class="product-image-container">
-                            <img src="{{ asset('images/MANGANI/home-lights.jpg') }}" alt="The exterior of a building is lit up at night using solar power" class="product-img">
-                        </div>
-                        <p class="text-center image-caption mt-3">The exterior of a building is lit up at night using solar power.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+                        <div class="product-header p-4">
+                            <h2 class="text-green mb-3">{{ $product->name }}</h2>
+                            <div class="product-description">
+                                <p class="mb-0">{!! nl2br(e($product->description)) !!}</p>
+                            </div>
 
-        <!-- Solar Water Pumps Section -->
-        <section class="product-section" id="solar-water-pumps">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12">
-                        <h2 class="text-green">Solar Water Pumps</h2>
-                        <p>Driving agricultural transformation with solar water pumps for irrigation, enabling year-round farming. Our PAYG model provides affordable access, allowing farmers in groups of five to cultivate crops multiple times annually. Training in good farming practices maximizes yields. This sustainable model empowers farmers, enhances income, reduces dependency on rain, and promotes climate resilience.</p>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <!-- Image 3 -->
-                    <div class="col-md-6 mb-4">
-                         <div class="product-image-container">
-                            <img src="{{ asset('images/MANGANI/woman.jpg') }}" alt="A woman works on installing a water pump" class="product-img">
-                         </div>
-                        <p class="text-center image-caption mt-3">A woman works on installing a water pump while being observed by a group of adults and children.</p>
-                    </div>
-                    <!-- Image 4 -->
-                    <div class="col-md-6 mb-4">
-                        <div class="product-image-container">
-                            <img src="{{ asset('images/MANGANI/Solar-water.jpg') }}" alt="Solar-powered irrigation" class="product-img">
+                            @if($product->features && count($product->features) > 0)
+                            <div class="mt-4">
+                                <h5 class="text-green mb-3">Key Features:</h5>
+                                <ul class="benefits-list">
+                                    @foreach($product->features as $feature)
+                                        @if(trim($feature))
+                                        <li>{{ $feature }}</li>
+                                        @endif
+                                    @endforeach
+                                </ul>
+                            </div>
+                            @endif
                         </div>
-                        <p class="text-center image-caption mt-3">Solar-powered irrigation in action, watering a field</p>
                     </div>
                 </div>
-             </div>
-        </section>
-    </div>
+
+                @if($product->images->count() > 0)
+                <div class="row">
+                    @foreach($product->images as $image)
+                    <div class="col-xl-4 col-lg-4 col-md-6 mb-4" data-aos="zoom-in" data-aos-delay="{{ $loop->iteration * 100 }}">
+                        <div class="product-card h-100 text-center">
+                            <div class="product-image-container">
+                                <img src="{{ $image->image_url }}"
+                                     alt="{{ $image->caption ?? $product->name }}"
+                                     class="product-img img-fluid"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/default-image.png') }}';">
+                            </div>
+                            <div class="product-content p-4">
+                                @if($image->title && $image->title != $product->name)
+                                <h5 class="image-title mb-2">{{ $image->title }}</h5>
+                                @endif
+
+                                @if($image->description)
+                                <p class="image-description text-muted mb-0">{{ $image->description }}</p>
+                                @elseif($image->caption)
+                                <p class="image-caption text-muted mb-0">{{ $image->caption }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+            </section>
+            
+            @if(!$loop->last)
+            <div class="section-divider my-5" data-aos="fade-up">
+                <div class="divider-line"></div>
+            </div>
+            @endif
+            @endforeach
+
+            @if($products->count() == 0)
+            <div class="text-center py-5" data-aos="fade-up">
+                <i class="bi bi-box display-1 text-muted"></i>
+                <h3 class="text-muted mt-3">No Products Available</h3>
+                <p class="text-muted">Check back soon for our latest products and services.</p>
+            </div>
+            @endif
+        </div>
+    </section>
 
     <!-- Contact Us Section -->
-    <section class="contact-section py-5">
+    <section class="contact-section py-5" data-aos="fade-up">
         <div class="container">
-            <h2 class="text-center section-heading">Contact Us</h2>
-            <div class="contact-info-details col-lg-8 mx-auto">
-                <p class="text-center">For inquiries about our products and services:</p>
-                <div class="text-center">
-                    <p><i class="bi bi-telephone"></i> <strong>Phone:</strong> <a href="tel:+265988415852">+265 (0) 988 415 852</a></p>
-                    <p><i class="bi bi-envelope"></i> <strong>Email:</strong> <a href="mailto:inclusivegreenenergyafrica@gmail.com">inclusivegreenenergyafrica@gmail.com</a></p>
-                    <p><i class="bi bi-geo-alt"></i> <strong>Address:</strong> Lilongwe, Malawi</p>
+            <h2 class="text-center mb-4">Contact Us</h2>
+            <div class="contact-info-details col-lg-8 mx-auto text-center">
+                <p class="mb-4">For inquiries about our products and services:</p>
+                <div class="contact-links mb-4">
+                    <p class="mb-2"><i class="bi bi-telephone"></i> <strong>Phone:</strong> <a href="tel:+265988415852">+265 (0) 988 415 852</a></p>
+                    <p class="mb-2"><i class="bi bi-envelope"></i> <strong>Email:</strong> <a href="mailto:inclusivegreenenergyafrica@gmail.com">inclusivegreenenergyafrica@gmail.com</a></p>
+                    <p class="mb-2"><i class="bi bi-geo-alt"></i> <strong>Address:</strong> Lilongwe, Malawi</p>
                 </div>
-                <h3 class="mt-4 h5 fw-semibold text-center">Office Hours</h3>
-                <p class="text-center">Monday to Friday: 8:00 am - 5:00 pm</p>
-                <p class="text-center">Saturday: 9:00 am - 12:00 noon</p>
-                <p class="text-center">Closed on Sundays</p>
-                <!-- Follow Us Online Section -->
-                <div class="social-icons text-center">
+                <h3 class="mt-4 h5 fw-semibold mb-3">Office Hours</h3>
+                <p class="mb-1">Monday to Friday: 8:00 am - 5:00 pm</p>
+                <p class="mb-1">Saturday: 9:00 am - 12:00 noon</p>
+                <p class="mb-4">Closed on Sundays</p>
+
+                <div class="social-icons mt-4">
                     <h4 class="h5 fw-semibold mb-3">Follow us online</h4>
-                    <div class="d-flex justify-content-center gap-3">
-                        <a href="https://www.facebook.com/profile.php?id=100085898573695" target="_blank" rel="noopener noreferrer" class="text-decoration-none" aria-label="Facebook">
-                            <i class="bi bi-facebook fs-3"></i>
-                        </a>
-                        <a href="https://www.linkedin.com/company/inclusive-green-energy-africa/" target="_blank" rel="noopener noreferrer" class="text-decoration-none" aria-label="LinkedIn">
-                            <i class="bi bi-linkedin fs-3"></i>
-                        </a>
-                        <a href="https://www.instagram.com/igea23?igsh=bG5jNmJoZ3h2cWhl" target="_blank" rel="noopener noreferrer" class="text-decoration-none" aria-label="Instagram">
-                            <i class="bi bi-instagram fs-3"></i>
-                        </a>
+                    <div class="d-flex justify-content-center gap-4">
+                        <a href="https://www.facebook.com/profile.php?id=100085898573695" target="_blank"><i class="bi bi-facebook fs-2"></i></a>
+                        <a href="https://www.linkedin.com/company/inclusive-green-energy-africa/" target="_blank"><i class="bi bi-linkedin fs-2"></i></a>
+                        <a href="https://www.instagram.com/igea23?igsh=bG5jNmJoZ3h2cWhl" target="_blank"><i class="bi bi-instagram fs-2"></i></a>
                     </div>
                 </div>
             </div>
@@ -106,255 +119,222 @@
 </main>
 
 <style>
-/* Product Hero Section */
-.product-hero-section {
-    position: relative;
-    padding: 80px 0;
-    margin-bottom: 50px;
-    background: url('{{ asset("images/MANGANI/products-background.jpg") }}') no-repeat center center;
-    background-size: cover;
-    color: white;
-    text-align: center;
-    border-radius: 0 0 15px 15px;
-    overflow: hidden;
+/* ===== GENERAL ===== */
+body {
+    font-family: 'Poppins', sans-serif;
+    scroll-behavior: smooth;
+}
+.page-bg {
+    background: linear-gradient(to bottom right, #f5fdf8, #e9f8ee);
 }
 
+/* ===== HERO SECTION ===== */
+.product-hero-section {
+    position: relative;
+    padding: 100px 0;
+    background: url('{{ asset("images/MANGANI/products-background.jpg") }}') center/cover no-repeat;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+    border-radius: 0 0 20px 20px;
+}
 .product-hero-section::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(40, 167, 69, 0.7);
+    inset: 0;
+    background: rgba(0, 100, 0, 0.6);
     z-index: 1;
+    backdrop-filter: blur(3px);
 }
-
 .hero-content {
     position: relative;
     z-index: 2;
 }
-
 .hero-content h1 {
     font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 15px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    font-weight: 800;
 }
-
 .hero-content p {
     font-size: 1.2rem;
     max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    opacity: 0.9;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    margin: 15px auto 0;
+    opacity: 0.95;
 }
 
-/* Product Sections */
-.product-section {
-    padding: 60px 0;
-    border-bottom: 1px solid #e9ecef;
+/* ===== PRODUCT HEADER ===== */
+.product-header {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+.product-description {
+    line-height: 1.7;
+    font-size: 1.05rem;
+    color: #495057;
 }
 
-.product-section:last-of-type {
-    border-bottom: none;
+/* ===== PRODUCT CARD ===== */
+.product-card {
+    border-radius: 15px;
+    border: 1px solid #e9ecef;
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    margin: 0.5rem;
 }
-
-.text-green {
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(0, 128, 0, 0.15);
+}
+.product-image-container {
+    overflow: hidden;
+    border-bottom: 2px solid #e9ecef;
+}
+.product-img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+.product-card:hover .product-img {
+    transform: scale(1.08);
+}
+.product-content {
+    padding: 1.5rem !important;
+}
+.image-title {
     color: #198754;
     font-weight: 600;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+.image-description, .image-caption {
+    color: #6c757d;
+    font-size: 0.95rem;
+    line-height: 1.5;
 }
 
-.product-image-container {
-    width: 100%;
-    height: 300px;
-    overflow: hidden;
-    background: #f8f9fa;
+/* ===== SECTION DIVIDER ===== */
+.section-divider {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
-    margin-bottom: 1rem;
+}
+.divider-line {
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #28a745, transparent);
+    border-radius: 2px;
 }
 
-.product-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
+/* ===== FEATURES LIST ===== */
+.benefits-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
 }
-
-.product-img:hover {
-    transform: scale(1.05);
+.benefits-list li {
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 12px;
+    line-height: 1.6;
+    color: #495057;
 }
-
-.image-caption {
-    color: #6c757d;
-    font-size: 0.95rem;
-    font-style: italic;
-}
-
-/* Contact Us Section Styling */
-.contact-section {
-    background-color: #e9ecef;
-    text-align: center;
-}
-
-.contact-section h2.section-heading {
+.benefits-list li::before {
+    content: "\F28A";
+    font-family: 'bootstrap-icons';
+    position: absolute;
+    left: 0;
     color: #28a745;
-    margin-bottom: 40px;
-    font-weight: 600;
-}
-
-.contact-section p {
-    margin-bottom: 15px;
-    color: #555;
-    line-height: 1.7;
     font-size: 1.1rem;
 }
 
-.contact-section i {
-    color: #28a745;
-    margin-right: 10px;
-    width: 20px;
-    text-align: center;
-    vertical-align: middle;
+/* ===== CONTACT SECTION ===== */
+.contact-section {
+    background: linear-gradient(to right, #f0fff4, #e8f5e9);
+    border-top: 2px solid #28a745;
 }
-
-.contact-section .contact-info-details a {
+.contact-section a {
     color: #28a745;
-    text-decoration: none;
-    transition: color 0.3s ease;
     font-weight: 500;
 }
-
-.contact-section .contact-info-details a:hover {
-    color: #218838;
+.contact-section a:hover {
     text-decoration: underline;
 }
-
-.contact-section .social-icons {
-    margin-top: 25px;
-}
-
-.contact-section .social-icons a {
+.social-icons a {
     color: #28a745;
-    transition: color 0.3s ease, transform 0.3s ease;
-    display: inline-block;
+    transition: transform 0.3s, color 0.3s;
 }
-
-.contact-section .social-icons a:hover {
+.social-icons a:hover {
+    transform: scale(1.2);
     color: #218838;
-    transform: scale(1.15);
 }
 
-/* Mobile-first responsive design */
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .hero-content h1 { 
+        font-size: 2.2rem; 
+        padding: 0 1rem;
+    }
+    .hero-content p {
+        padding: 0 1rem;
+    }
+    .product-img { 
+        height: 220px; 
+    }
+    .product-header {
+        padding: 1.5rem !important;
+        margin: 0 0.5rem 1.5rem 0.5rem;
+    }
+    .product-card {
+        margin: 0.25rem;
+    }
+    .product-content {
+        padding: 1.25rem !important;
+    }
+    .benefits-list li {
+        padding-left: 25px;
+        margin-bottom: 10px;
+    }
+}
+
 @media (max-width: 576px) {
-    .product-hero-section {
-        padding: 60px 0;
-    }
-    
-    .hero-content h1 {
-        font-size: 2rem;
-    }
-    
-    .hero-content p {
-        font-size: 1rem;
-    }
-    
-    .product-image-container {
-        height: 250px;
-    }
-    
-    .product-img {
-        object-fit: contain;
-        width: auto;
-        max-width: 100%;
-        max-height: 100%;
-    }
-    
-    .product-section {
-        padding: 40px 0;
-    }
-    
-    .contact-section {
-        padding: 40px 15px;
-    }
-    
-    .contact-section h2.section-heading {
-        font-size: 1.8rem;
-        margin-bottom: 30px;
-    }
-    
-    .contact-section p {
-        font-size: 1rem;
-    }
-}
-
-@media (min-width: 577px) and (max-width: 768px) {
-    .product-hero-section {
-        padding: 70px 0;
-    }
-    
-    .hero-content h1 {
-        font-size: 2.5rem;
-    }
-    
-    .hero-content p {
-        font-size: 1.1rem;
-    }
-    
-    .product-image-container {
-        height: 280px;
-    }
-    
-    .contact-section {
-        padding: 50px 20px;
-    }
-}
-
-@media (min-width: 769px) and (max-width: 992px) {
     .product-hero-section {
         padding: 80px 0;
     }
-    
-    .product-image-container {
-        height: 300px;
-    }
-}
-
-@media (min-width: 993px) and (max-width: 1200px) {
-    .product-image-container {
-        height: 320px;
-    }
-}
-
-@media (min-width: 1201px) {
-    .product-image-container {
-        height: 340px;
-    }
-}
-
-/* Extra small devices adjustments */
-@media (max-width: 575.98px) {
-    .product-hero-section {
-        padding: 50px 0;
-        border-radius: 0;
-    }
-    
     .hero-content h1 {
         font-size: 1.8rem;
     }
-    
-    .product-image-container {
-        height: 220px;
+    .hero-content p {
+        font-size: 1rem;
     }
-    
-    .contact-section p {
-        font-size: 0.95rem;
+    .product-header {
+        padding: 1.25rem !important;
+    }
+    .product-description {
+        font-size: 1rem;
     }
 }
 </style>
+@endsection
+
+@section('scripts')
+<!-- Include AOS (Animate On Scroll) -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    AOS.init({
+        duration: 1000,
+        once: false,
+        offset: 100,
+    });
+
+    // Refresh AOS on scroll for smooth repeated animations
+    window.addEventListener('scroll', function() {
+        AOS.refresh();
+    });
+});
+</script>
 @endsection

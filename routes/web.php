@@ -1,257 +1,119 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuthController;
-use App\Models\TeamMember;
-use App\Models\Page;
-use App\Models\Gallery;
+use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
-// Create admin user route (remove after use)
-Route::get('/create-admin-user', [AuthController::class, 'createAdminUser']);
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
 
-// Authentication Routes
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+// Public Routes - MUST COME FIRST
+Route::get('/', [PageController::class, 'home'])->name('home');
+Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/team', [PageController::class, 'team'])->name('team');
+Route::get('/gallery', [PageController::class, 'gallery'])->name('gallery');
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/contact', [PageController::class, 'submitContact'])->name('contact.submit');
 
-// Public Image Display Routes - FIXED ROUTES
-Route::get('/team-member-image/{id}', [AdminController::class, 'showTeamMemberImage'])->name('team.image');
-Route::get('/gallery-image/{id}', [AdminController::class, 'showGalleryImage'])->name('gallery.image');
-Route::get('/home-bg-image/{filename}', [AdminController::class, 'showHomeBackgroundImage'])->name('home.bg.image');
+// Product routes for public site
+Route::get('/products', [PageController::class, 'products'])->name('products');
+Route::get('/products/{product:slug}', [PageController::class, 'showProduct'])->name('products.show');
 
-// Debug route (remove after testing)
-Route::get('/debug-images', function() {
-    $teamMembers = \App\Models\TeamMember::all();
-    $debug = [];
+// Authentication Routes with Cache Control
+Route::get('/login', function () {
+    $response = response()->view('auth.login');
     
-    foreach ($teamMembers as $member) {
-        $debug[] = [
-            'id' => $member->id,
-            'name' => $member->name,
-            'image_path' => $member->image_path,
-            'image_url' => $member->image_url,
-            'storage_exists' => $member->image_path ? \Illuminate\Support\Facades\Storage::disk('public')->exists('team/' . $member->image_path) : false,
-            'file_path' => $member->image_path ? storage_path('app/public/team/' . $member->image_path) : null,
-            'file_exists' => $member->image_path ? file_exists(storage_path('app/public/team/' . $member->image_path)) : false,
-        ];
+    return $response->header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate')
+                   ->header('Pragma', 'no-cache')
+                   ->header('Expires', 'Fri, 01 Jan 1990 00:00:00 GMT');
+})->name('login');
+
+Route::post('/login', function (\Illuminate\Http\Request $request) {
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    if (\Illuminate\Support\Facades\Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+        return redirect()->intended('/admin/dashboard');
     }
-    
-    return response()->json($debug);
+
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ]);
 });
 
-// Public Routes
-Route::get('/', function () {
-    try {
-        $page = Page::where('slug', 'home')->first();
-    } catch (\Exception $e) {
-        $page = null;
-    }
+// Enhanced Logout Route
+Route::post('/logout', function () {
+    \Illuminate\Support\Facades\Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
     
-    try {
-        $gallery = Gallery::where('is_active', true)
-            ->orderBy('order')
-            ->limit(6)
-            ->get();
-    } catch (\Exception $e) {
-        $gallery = collect([]);
-    }
-    
-    $defaultContent = [
-        'hero_images' => [
-            'images/MANGANI/IMG-20250307-WA0460.jpg',
-            'images/MANGANI/IMG-20250307-WA0464.jpg',
-            'images/MANGANI/IMG-20250307-WA0460.jpg',
-            'images/MANGANI/IMG-20250307-WA0461.jpg'
-        ],
-        'stats' => [
-            'products_sold' => 1286,
-            'people_reached' => 5000,
-            'eco_friendly' => 100
-        ],
-        'hero' => [
-            'title' => 'Inclusive Green Energy Africa',
-            'subtitle' => 'Empowering Communities Through Sustainable Energy',
-            'description' => 'Providing innovative solar energy solutions to drive economic growth and environmental sustainability across Africa.'
-        ],
-        'why_choose_title' => 'Why Choose Inclusive Green Energy Africa?',
-        'products_title' => 'Our Products & Services',
-        'products' => [
-            [
-                'title' => 'Solar Home Systems',
-                'description' => 'Complete solar solutions for residential use, providing reliable electricity for lighting, charging, and small appliances.',
-                'icon' => 'bi-house-check'
-            ],
-            [
-                'title' => 'Solar Water Pumping',
-                'description' => 'Efficient solar-powered water pumping systems for irrigation and domestic water supply.',
-                'icon' => 'bi-droplet'
-            ],
-            [
-                'title' => 'Energy Consulting',
-                'description' => 'Expert advice and consultation services for sustainable energy projects and implementations.',
-                'icon' => 'bi-lightbulb'
-            ]
-        ],
-        'gallery_title' => 'Our Work in Action',
-        'gallery_description' => 'See how we\'re transforming communities through sustainable energy solutions.'
-    ];
+    return redirect('/login')
+        ->header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', 'Fri, 01 Jan 1990 00:00:00 GMT');
+})->name('logout');
 
-    $content = $page && !empty($page->content) ? json_decode($page->content, true) : $defaultContent;
-
-    return view('pages.home', compact('page', 'content', 'gallery'));
-})->name('home');
-
-Route::get('/about', function () {
-    try {
-        $page = Page::where('slug', 'about')->first();
-    } catch (\Exception $e) {
-        $page = null;
-    }
-    
-    $defaultContent = [
-        'hero' => [
-            'title' => 'About Inclusive Green Energy Africa',
-            'subtitle' => 'Driving Sustainable Energy Solutions Across Africa'
-        ],
-        'sections' => [
-            'who_we_are' => [
-                'title' => 'Who We Are',
-                'content' => 'Inclusive Green Energy Africa is a pioneering organization dedicated to providing sustainable energy solutions that empower communities across Africa. We believe in the transformative power of renewable energy to drive economic growth and improve quality of life.'
-            ],
-            'vision' => [
-                'title' => 'Our Vision',
-                'content' => 'To be the leading provider of inclusive and sustainable energy solutions across Africa, empowering communities and driving environmental conservation.'
-            ],
-            'mission' => [
-                'title' => 'Our Mission',
-                'content' => 'To provide accessible, affordable, and sustainable energy solutions that transform lives, empower communities, and protect our environment through innovative solar technologies.'
-            ],
-            'keys' => [
-                'title' => 'Our Key Focus Areas',
-                'items' => [
-                    'Solar Home Systems for rural electrification',
-                    'Solar water pumping for agriculture and domestic use',
-                    'Energy efficiency consulting',
-                    'Community empowerment through renewable energy'
-                ]
-            ],
-            'overview' => [
-                'title' => 'Company Overview',
-                'content' => 'Founded with a passion for sustainable development, Inclusive Green Energy Africa combines technical expertise with deep community engagement to deliver energy solutions that make a real difference in people\'s lives.'
-            ]
-        ]
-    ];
-
-    $content = $page && !empty($page->content) ? json_decode($page->content, true) : $defaultContent;
-
-    return view('pages.about', compact('page', 'content'));
-})->name('about');
-
-Route::get('/products', function () {
-    try {
-        $page = Page::where('slug', 'products')->first();
-    } catch (\Exception $e) {
-        $page = null;
-    }
-    
-    $defaultContent = [
-        'hero' => [
-            'title' => 'Our Products & Services',
-            'subtitle' => 'Sustainable Energy Solutions for Every Need'
-        ],
-        'sections' => [
-            'solar_home' => [
-                'title' => 'Solar Home Systems',
-                'content' => 'Complete solar solutions designed for residential use, providing reliable electricity for lighting, mobile charging, radio, television, and small appliances. Our systems are perfect for both urban and rural households.',
-                'images' => []
-            ],
-            'solar_water' => [
-                'title' => 'Solar Water Pumping Systems',
-                'content' => 'Efficient solar-powered water pumping solutions for irrigation, livestock watering, and domestic water supply. Reduce your energy costs while ensuring reliable water access.',
-                'images' => []
-            ]
-        ]
-    ];
-
-    $content = $page && !empty($page->content) ? json_decode($page->content, true) : $defaultContent;
-
-    return view('pages.products', compact('page', 'content'));
-})->name('products');
-
-// Public Gallery Route
-Route::get('/gallery', function () {
-    try {
-        $gallery = Gallery::where('is_active', true)
-            ->orderBy('order')
-            ->get();
-    } catch (\Exception $e) {
-        $gallery = collect([]);
-    }
-    return view('pages.gallery', compact('gallery'));
-})->name('gallery');
-
-Route::get('/team', function () {
-    try {
-        $teamMembers = TeamMember::where('is_active', true)
-            ->orderBy('order')
-            ->get();
-    } catch (\Exception $e) {
-        $teamMembers = collect([]);
-    }
-    return view('pages.team', compact('teamMembers'));
-})->name('team');
-
-Route::get('/contact', function () {
-    return view('pages.contact');
-})->name('contact');
-
-// Admin routes - protected by auth middleware
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+// Admin Routes - All admin routes should have cache control
+ 
+Route::get('/admin/products/images/{filename}', [AdminController::class, 'showProductImageAdmin'])
+    ->name('admin.products.image');
+Route::prefix('admin')->middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     
-    // Logout
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    // Page Management
+    Route::get('/pages', [AdminController::class, 'listPages'])->name('admin.pages.index');
+    Route::get('/pages/{pageSlug}/edit', [AdminController::class, 'editPage'])->name('admin.pages.edit');
+    Route::put('/pages/{pageSlug}/update', [AdminController::class, 'updatePageContent'])->name('admin.pages.update');
+    Route::delete('/pages/{pageSlug}/delete-image', [AdminController::class, 'deleteHomePageImage'])->name('admin.pages.delete-image');
+    Route::delete('/pages/{id}', [AdminController::class, 'deletePage'])->name('admin.pages.delete');
     
-    // Team Members Routes - FIXED: Added PUT routes
-    Route::prefix('team')->group(function () {
-        Route::get('/', [AdminController::class, 'manageTeam'])->name('admin.team.index');
-        Route::get('/create', [AdminController::class, 'createTeamMember'])->name('admin.team.create');
-        Route::post('/store', [AdminController::class, 'storeTeamMember'])->name('admin.team.store');
-        Route::get('/edit/{id}', [AdminController::class, 'editTeamMember'])->name('admin.team.edit');
-        Route::put('/update/{id}', [AdminController::class, 'updateTeamMember'])->name('admin.team.update'); // FIXED: Changed to PUT
-        Route::post('/update/{id}', [AdminController::class, 'updateTeamMember'])->name('admin.team.update.post'); // Alternative POST route
-        Route::delete('/delete/{id}', [AdminController::class, 'deleteTeamMember'])->name('admin.team.delete');
-        Route::patch('/toggle-status/{id}', [AdminController::class, 'toggleTeamMemberStatus'])->name('admin.team.toggle-status');
-    });
+    // Team Management
+    Route::get('/team', [AdminController::class, 'manageTeam'])->name('admin.team.index');
+    Route::get('/team/create', [AdminController::class, 'createTeamMember'])->name('admin.team.create');
+    Route::post('/team', [AdminController::class, 'storeTeamMember'])->name('admin.team.store');
+    Route::get('/team/{id}/edit', [AdminController::class, 'editTeamMember'])->name('admin.team.edit');
+    Route::put('/team/{id}', [AdminController::class, 'updateTeamMember'])->name('admin.team.update');
+    Route::delete('/team/{id}', [AdminController::class, 'deleteTeamMember'])->name('admin.team.delete');
+    Route::patch('/team/{id}/toggle-status', [AdminController::class, 'toggleTeamMemberStatus'])->name('admin.team.toggle-status');
     
-    // Gallery Routes - FIXED: Added PUT routes
-    Route::prefix('gallery')->group(function () {
-        Route::get('/', [AdminController::class, 'manageGallery'])->name('admin.gallery.index');
-        Route::get('/create', [AdminController::class, 'createGalleryImage'])->name('admin.gallery.create');
-        Route::post('/store', [AdminController::class, 'storeGalleryImage'])->name('admin.gallery.store');
-        Route::get('/edit/{id}', [AdminController::class, 'editGalleryImage'])->name('admin.gallery.edit');
-        Route::put('/update/{id}', [AdminController::class, 'updateGalleryImage'])->name('admin.gallery.update'); // FIXED: Changed to PUT
-        Route::post('/update/{id}', [AdminController::class, 'updateGalleryImage'])->name('admin.gallery.update.post'); // Alternative POST route
-        Route::delete('/delete/{id}', [AdminController::class, 'deleteGalleryImage'])->name('admin.gallery.delete');
-    });
+    // Gallery Management
+    Route::get('/gallery', [AdminController::class, 'manageGallery'])->name('admin.gallery.index');
+    Route::get('/gallery/create', [AdminController::class, 'createGalleryImage'])->name('admin.gallery.create');
+    Route::post('/gallery', [AdminController::class, 'storeGalleryImage'])->name('admin.gallery.store');
+    Route::get('/gallery/{id}/edit', [AdminController::class, 'editGalleryImage'])->name('admin.gallery.edit');
+    Route::put('/gallery/{id}', [AdminController::class, 'updateGalleryImage'])->name('admin.gallery.update');
+    Route::delete('/gallery/{id}', [AdminController::class, 'deleteGalleryImage'])->name('admin.gallery.delete');
     
-    // Page Routes - FIXED: Added PUT route for page updates
-    Route::delete('/admin/pages/{id}/delete', [AdminController::class, 'deletePage'])->name('admin.pages.delete');
-    Route::prefix('pages')->group(function () {
-        Route::get('/', [AdminController::class, 'listPages'])->name('admin.pages.index');
-        Route::get('/edit/{pageSlug}', [AdminController::class, 'editPage'])->name('admin.pages.edit');
-        Route::put('/update/{pageSlug}', [AdminController::class, 'updatePageContent'])->name('admin.pages.update'); // FIXED: Changed to PUT
-        Route::post('/update/{pageSlug}', [AdminController::class, 'updatePageContent'])->name('admin.pages.update.post'); // Alternative POST route
-    });
+    // Product Management Routes
+    Route::get('/products', [AdminController::class, 'manageProducts'])->name('admin.products.index');
+    Route::get('/products/create', [AdminController::class, 'createProduct'])->name('admin.products.create');
+    Route::post('/products', [AdminController::class, 'storeProduct'])->name('admin.products.store');
+    Route::get('/products/{id}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
+    Route::put('/products/{id}', [AdminController::class, 'updateProduct'])->name('admin.products.update');
+    Route::delete('/products/{id}', [AdminController::class, 'deleteProduct'])->name('admin.products.delete');
+    Route::patch('/products/{id}/toggle-status', [AdminController::class, 'toggleProductStatus'])->name('admin.products.toggle-status');
+    Route::delete('/products/images/{id}', [AdminController::class, 'deleteProductImage'])->name('admin.products.images.delete');
 });
 
-// Redirect /admin to dashboard
-Route::get('/admin', function () {
-    return redirect()->route('admin.dashboard');
-});
+// Image display routes
+Route::get('/storage/team/{filename}', [AdminController::class, 'showTeamMemberImage'])->name('team.image');
+Route::get('/storage/gallery/{filename}', [AdminController::class, 'showGalleryImage'])->name('gallery.image');
+Route::get('/storage/home-backgrounds/{filename}', [AdminController::class, 'showHomeBackgroundImage'])->name('home.background.image');
+Route::get('/storage/products/{filename}', [AdminController::class, 'showProductImage'])->name('products.image');
 
-// Fallback route for 404 pages
+// Fallback route
 Route::fallback(function () {
-    abort(404);
+    return redirect('/');
 });
