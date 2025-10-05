@@ -134,6 +134,8 @@
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.4s ease;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .team-card:hover {
@@ -142,14 +144,16 @@
 }
 
 .team-image-container {
-    height: 320px;
+    /* Let the image container adjust to the image height naturally */
+    flex: 0 0 auto;
     overflow: hidden;
+    width: 100%;
 }
 
 .team-img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto; /* Let height adjust automatically */
+    display: block;
     transition: transform 0.4s ease;
 }
 
@@ -159,6 +163,7 @@
 
 .team-content {
     padding: 1.5rem;
+    flex: 1 0 auto; /* Allow content to grow and take remaining space */
 }
 
 .team-name {
@@ -277,9 +282,6 @@
     .hero-content h1 {
         font-size: 2.2rem;
     }
-    .team-image-container {
-        height: 280px;
-    }
     
     /* Adjust heartbeat animation for mobile */
     @keyframes heartbeat-mobile {
@@ -305,6 +307,18 @@
     
     .contact-section.heartbeat {
         animation: heartbeat-mobile 2s ease-in-out infinite;
+    }
+    
+    /* Ensure images display fully on mobile */
+    .team-image-container {
+        max-height: none; /* Remove any max-height restrictions */
+    }
+}
+
+/* Extra small devices (phones, 576px and down) */
+@media (max-width: 576px) {
+    .team-card {
+        margin-bottom: 2rem;
     }
 }
 </style>
