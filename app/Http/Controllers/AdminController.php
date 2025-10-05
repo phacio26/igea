@@ -748,9 +748,7 @@ class AdminController extends Controller
         return redirect()->route('admin.products.index')->with('success', "Product {$status} successfully!");
     }
 
-    /**
-     * Show product image - FIXED VERSION
-     */
+     
     public function showProductImage($filename)
     {
         try {

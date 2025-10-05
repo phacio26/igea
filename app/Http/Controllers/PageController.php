@@ -134,8 +134,7 @@ class PageController extends Controller
             'message' => 'required|string',
         ]);
 
-        // Here you can handle the contact form submission
-        // For now, we'll just return a success message
+        
         
         return redirect()->route('contact')->with('success', 'Thank you for your message! We will get back to you soon.');
     }

@@ -90,7 +90,7 @@
     </section>
 
     <!-- Contact Us Section -->
-    <section class="contact-section py-5" data-aos="fade-up">
+    <section class="contact-section py-5" id="contact-us">
         <div class="container">
             <h2 class="text-center mb-4">Contact Us</h2>
             <div class="contact-info-details col-lg-8 mx-auto text-center">
@@ -250,11 +250,77 @@ body {
     font-size: 1.1rem;
 }
 
-/* ===== CONTACT SECTION ===== */
+/* ===== CONTACT SECTION ANIMATIONS ===== */
 .contact-section {
     background: linear-gradient(to right, #f0fff4, #e8f5e9);
     border-top: 2px solid #28a745;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s ease-out;
 }
+
+/* Initial state - hidden to the left */
+.contact-section.scroll-animate {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+/* Active state - visible with heartbeat effect */
+.contact-section.scroll-active {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Continuous Heartbeat animation */
+.contact-section.heartbeat {
+    animation: heartbeat 2s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+    0% {
+        transform: scale(1);
+    }
+    5% {
+        transform: scale(1.02);
+    }
+    10% {
+        transform: scale(1);
+    }
+    15% {
+        transform: scale(1.02);
+    }
+    20% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Slide in from right animation */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Slide in from left animation */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
 .contact-section a {
     color: #28a745;
     font-weight: 500;
@@ -297,6 +363,32 @@ body {
         padding-left: 25px;
         margin-bottom: 10px;
     }
+    
+    /* Adjust heartbeat animation for mobile */
+    @keyframes heartbeat-mobile {
+        0% {
+            transform: scale(1);
+        }
+        5% {
+            transform: scale(1.01);
+        }
+        10% {
+            transform: scale(1);
+        }
+        15% {
+            transform: scale(1.01);
+        }
+        20% {
+            transform: scale(1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    
+    .contact-section.heartbeat {
+        animation: heartbeat-mobile 2s ease-in-out infinite;
+    }
 }
 
 @media (max-width: 576px) {
@@ -335,6 +427,97 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('scroll', function() {
         AOS.refresh();
     });
+
+    // Custom scroll animation for contact section
+    const contactSection = document.getElementById('contact-us');
+    let scrollTimeout;
+    let lastScrollDirection = 'down';
+    let lastScrollY = window.scrollY;
+    let isHeartbeatActive = false;
+    
+    // Add initial animation class
+    if (contactSection) {
+        contactSection.classList.add('scroll-animate');
+        
+        // Function to handle scroll events
+        function handleScroll() {
+            const currentScrollY = window.scrollY;
+            const scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
+            
+            // Detect scroll direction change
+            if (scrollDirection !== lastScrollDirection) {
+                // Remove heartbeat when scrolling starts
+                if (isHeartbeatActive) {
+                    contactSection.classList.remove('heartbeat');
+                    isHeartbeatActive = false;
+                }
+                
+                // Reset animation classes
+                contactSection.classList.remove('scroll-active');
+                
+                // Add slide animation based on direction
+                if (scrollDirection === 'down') {
+                    contactSection.style.animation = 'slideInRight 0.5s ease-out forwards';
+                } else {
+                    contactSection.style.animation = 'slideInLeft 0.5s ease-out forwards';
+                }
+                
+                // Add active class after a short delay
+                setTimeout(() => {
+                    contactSection.classList.add('scroll-active');
+                }, 50);
+                
+                lastScrollDirection = scrollDirection;
+            }
+            
+            // Clear existing timeout
+            clearTimeout(scrollTimeout);
+            
+            // Set a timeout to add heartbeat effect when scrolling stops
+            scrollTimeout = setTimeout(function() {
+                // Remove any inline animation
+                contactSection.style.animation = '';
+                
+                // Add continuous heartbeat effect
+                if (!isHeartbeatActive) {
+                    contactSection.classList.add('heartbeat');
+                    isHeartbeatActive = true;
+                }
+            }, 150);
+            
+            lastScrollY = currentScrollY;
+        }
+        
+        // Listen for scroll events with throttling
+        let ticking = false;
+        window.addEventListener('scroll', function() {
+            if (!ticking) {
+                requestAnimationFrame(function() {
+                    handleScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+        
+        // Trigger animation when contact section comes into view initially
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    contactSection.classList.add('scroll-active');
+                    contactSection.style.animation = 'slideInRight 0.5s ease-out forwards';
+                    
+                    // Start heartbeat after initial animation
+                    setTimeout(() => {
+                        contactSection.classList.add('heartbeat');
+                        isHeartbeatActive = true;
+                    }, 600);
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        observer.observe(contactSection);
+    }
 });
 </script>
 @endsection
